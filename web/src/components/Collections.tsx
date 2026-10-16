@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "@/lib/motion";
 
@@ -18,7 +19,7 @@ type Tile = {
 const tiles: Tile[] = [
   {
     name: "Water Closets",
-    href: "#",
+    href: "/collections/water-closets",
     image: "/images/col-water-closets.webp",
     alt: "A wall-hung water closet and basin in a white marble bathroom",
     span: "md:col-span-7",
@@ -26,7 +27,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Vanity Cabinets",
-    href: "#",
+    href: "/collections/vanity-cabinets",
     image: "/images/col-vanities.webp",
     alt: "A walnut vanity with twin basins beneath arched mirrors",
     span: "md:col-span-5",
@@ -34,7 +35,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Freestanding Baths",
-    href: "#",
+    href: "/collections/freestanding-baths",
     image: "/images/col-baths.webp",
     alt: "A freestanding bath beside a tiled wall in soft daylight",
     span: "md:col-span-4",
@@ -42,7 +43,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Rainfall Showers",
-    href: "#",
+    href: "/collections/rainfall-showers",
     image: "/images/col-showers.webp",
     alt: "A rainfall shower head releasing water against a dark wall",
     span: "md:col-span-4",
@@ -50,7 +51,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Wash Basins",
-    href: "#",
+    href: "/collections/wash-basins",
     image: "/images/col-basins.webp",
     alt: "Raking light across the curve of a basin in a warm room",
     span: "md:col-span-4",
@@ -58,7 +59,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Kitchen Sinks & Fixtures",
-    href: "#",
+    href: "/collections/kitchen",
     image: "/images/col-kitchen.webp",
     alt: "A stainless sink with a matte black tap in a timber and stone kitchen",
     span: "md:col-span-8",
@@ -66,7 +67,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Water Heaters",
-    href: "#",
+    href: "/collections/water-heaters",
     span: "md:col-span-4",
     aspect: "aspect-[4/3] md:aspect-auto md:min-h-[20rem] md:flex-1",
   },
@@ -119,20 +120,20 @@ export function Collections() {
             </h2>
           </div>
           <div className="md:col-span-3 md:col-start-10 md:text-right">
-            <a
+            <Link
               data-head
-              href="#"
+              href="/collections"
               className="inline-block border-b border-ink/60 pb-1 text-[11px] font-medium uppercase tracking-[0.2em] transition-opacity hover:opacity-60"
             >
               Shop all collections
-            </a>
+            </Link>
           </div>
         </div>
 
         <ul className="grid gap-x-6 gap-y-14 md:grid-cols-12 md:gap-y-20">
           {tiles.map((t) => (
             <li key={t.name} data-tile className={`${t.span} flex flex-col`}>
-              <a href={t.href} className="group flex h-full flex-col">
+              <Link href={t.href} className="group flex h-full flex-col">
                 <div
                   className={`relative w-full overflow-hidden ${t.aspect} ${
                     t.image ? "bg-stone" : "grid place-items-center bg-stone"
@@ -158,7 +159,7 @@ export function Collections() {
                     Explore
                   </span>
                 </div>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

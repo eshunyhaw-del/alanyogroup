@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "@/lib/motion";
 
@@ -69,13 +70,13 @@ export function Sculpture() {
             We choose forms that hold their own in an architectural space: unbroken curves, honest
             materials, and the stillness that comes from restraint.
           </p>
-          <a
+          <Link
             data-rise
-            href="#"
+            href="/collections/freestanding-baths"
             className="mt-10 inline-block border border-porcelain/60 px-7 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-porcelain hover:text-ink"
           >
             View baths
-          </a>
+          </Link>
         </div>
 
         <div className="md:order-1 md:col-span-6 md:col-start-1">

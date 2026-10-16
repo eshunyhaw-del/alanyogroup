@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
+import { CartProvider } from "@/lib/cart";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import "./globals.css";
 
 const manrope = localFont({
@@ -26,7 +30,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <noscript>
           <style>{`.reveal{opacity:1!important}`}</style>
         </noscript>
-        {children}
+        <CartProvider>
+          <Suspense fallback={null}>
+            <Header />
+          </Suspense>
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

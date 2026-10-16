@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "@/lib/motion";
 
@@ -105,13 +106,13 @@ export function Craftsmanship() {
               Grain, edge and shadow line. We look first at how a piece is made, then at how it
               sits in the room, and only then at what it is called.
             </p>
-            <a
+            <Link
               data-rise
-              href="#"
+              href="/collections/vanity-cabinets"
               className="mt-10 inline-block border border-ink/70 px-7 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-ink hover:text-porcelain"
             >
               View vanities
-            </a>
+            </Link>
           </div>
 
           <div className="md:col-span-3 md:col-start-9 md:mt-40">

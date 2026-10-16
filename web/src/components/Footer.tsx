@@ -1,13 +1,27 @@
+import Link from "next/link";
+import { categories } from "@/lib/catalog";
+
 const columns = [
+  { title: "Collections", links: categories.map((c) => ({ label: c.name, href: `/collections/${c.slug}` })) },
   {
-    title: "Collections",
-    links: ["Water Closets", "Vanity Cabinets", "Freestanding Baths", "Rainfall Showers", "Wash Basins", "Kitchen", "Water Heaters"],
+    title: "Alanyo",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Showroom", href: "/showroom" },
+      { label: "Materials", href: "/materials" },
+    ],
   },
-  { title: "Alanyo", links: ["About", "Showroom", "Materials", "Journal"] },
-  { title: "Support", links: ["Contact", "Delivery", "Returns", "Warranty"] },
+  {
+    title: "Support",
+    links: [
+      { label: "Contact", href: "/contact" },
+      { label: "Delivery", href: "/delivery" },
+      { label: "Returns", href: "/returns" },
+      { label: "Warranty", href: "/warranty" },
+    ],
+  },
 ];
 
-// Support links are placeholders: delivery, returns and warranty policies are the client's to supply.
 export function Footer() {
   return (
     <footer className="bg-porcelain text-ink">
@@ -30,10 +44,10 @@ export function Footer() {
               </h2>
               <ul className="space-y-3 text-[15px] font-light">
                 {c.links.map((l) => (
-                  <li key={l}>
-                    <a href="#" className="transition-opacity hover:opacity-60">
-                      {l}
-                    </a>
+                  <li key={l.label}>
+                    <Link href={l.href} className="transition-opacity hover:opacity-60">
+                      {l.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -45,14 +59,14 @@ export function Footer() {
           <p>© 2026 Alanyo Group. All rights reserved.</p>
           <ul className="flex gap-8">
             <li>
-              <a href="#" className="transition-opacity hover:opacity-60">
+              <Link href="/privacy" className="transition-opacity hover:opacity-60">
                 Privacy
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="transition-opacity hover:opacity-60">
+              <Link href="/terms" className="transition-opacity hover:opacity-60">
                 Terms
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

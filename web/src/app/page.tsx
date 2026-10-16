@@ -1,5 +1,3 @@
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
 import { Collections } from "@/components/Collections";
 import { Craftsmanship } from "@/components/Craftsmanship";
 import { Hero } from "@/components/Hero";
@@ -10,7 +8,6 @@ import { Sculpture } from "@/components/Sculpture";
 export default function Home() {
   return (
     <>
-      <Header />
       <main>
         <Hero />
         <Sculpture />
@@ -19,7 +16,6 @@ export default function Home() {
         <Collections />
         <Invitation />
       </main>
-      <Footer />
     </>
   );
 }

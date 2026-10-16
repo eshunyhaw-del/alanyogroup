@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "@/lib/motion";
 
@@ -83,13 +84,13 @@ export function Hero() {
           Bathrooms and kitchens composed like architecture, considered in every surface, line and
           detail.
         </p>
-        <a
+        <Link
           data-reveal
-          href="#"
+          href="/collections"
           className="reveal mt-9 inline-block border border-white/70 px-7 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-white hover:text-ink"
         >
           Explore the collections
-        </a>
+        </Link>
       </div>
 
       <div

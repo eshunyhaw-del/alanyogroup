@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "@/lib/motion";
 
@@ -94,12 +95,12 @@ export function Ritual() {
                 Showers designed as part of the architecture, from the head above to the surfaces
                 around you.
               </p>
-              <a
-                href="#"
+              <Link
+                href="/collections/rainfall-showers"
                 className="mt-8 inline-block border border-porcelain/60 px-7 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-porcelain hover:text-ink"
               >
                 View showers
-              </a>
+              </Link>
             </div>
           </div>
         </div>

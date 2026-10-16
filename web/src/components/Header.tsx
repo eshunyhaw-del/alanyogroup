@@ -1,18 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useCart } from "@/lib/cart";
+import { useEffect, useState, useSyncExternalStore } from "react";
+
+const noopSubscribe = () => () => {};
+// False during server render and hydration, true afterwards, so client-only values never mismatch.
+function useHydrated() {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
+}
 
 const primary = [
-  { label: "Collections", href: "#" },
-  { label: "Showroom", href: "#" },
-  { label: "Materials", href: "#" },
-  { label: "About", href: "#" },
+  { label: "Collections", href: "/collections" },
+  { label: "Showroom", href: "/showroom" },
+  { label: "Materials", href: "/materials" },
+  { label: "About", href: "/about" },
 ];
 
 export function Header() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const { count: cartCount } = useCart();
+  const count = useHydrated() ? cartCount : 0;
+  const onHome = pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > window.innerHeight * 0.85);
@@ -32,7 +44,7 @@ export function Header() {
     };
   }, [open]);
 
-  const light = !(solid || open);
+  const light = onHome && !(solid || open);
 
   return (
     <header
@@ -47,9 +59,9 @@ export function Header() {
         <ul className="hidden gap-9 text-[11px] font-medium uppercase tracking-[0.18em] lg:flex">
           {primary.map((l) => (
             <li key={l.label}>
-              <a href={l.href} className="opacity-90 transition-opacity hover:opacity-60">
+              <Link href={l.href} className="opacity-90 transition-opacity hover:opacity-60">
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -72,12 +84,12 @@ export function Header() {
         </Link>
 
         <div className="flex items-center justify-end gap-6 text-[11px] font-medium uppercase tracking-[0.18em] sm:gap-9">
-          <a href="#" className="hidden opacity-90 transition-opacity hover:opacity-60 sm:inline">
-            Search
-          </a>
-          <a href="#" className="opacity-90 transition-opacity hover:opacity-60">
-            Cart <span aria-label="0 items">(0)</span>
-          </a>
+          <Link href="/contact" className="hidden opacity-90 transition-opacity hover:opacity-60 sm:inline">
+            Enquire
+          </Link>
+          <Link href="/cart" className="opacity-90 transition-opacity hover:opacity-60">
+            Cart <span aria-label={`${count} items`}>({count})</span>
+          </Link>
         </div>
       </nav>
 
@@ -89,9 +101,9 @@ export function Header() {
           <ul className="flex flex-col gap-6 text-2xl font-light tracking-tight">
             {primary.map((l) => (
               <li key={l.label}>
-                <a href={l.href} onClick={() => setOpen(false)}>
+                <Link href={l.href} onClick={() => setOpen(false)}>
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

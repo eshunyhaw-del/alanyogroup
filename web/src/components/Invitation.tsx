@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "@/lib/motion";
 
@@ -68,18 +69,18 @@ export function Invitation() {
           Whether you are renovating one bathroom or building a home, we would be glad to talk it through.
         </p>
         <div data-rise className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-          <a
-            href="#"
+          <Link
+            href="/contact"
             className="inline-block border border-white bg-white px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-ink transition-colors duration-500 ease-quiet hover:bg-transparent hover:text-white"
           >
             Make an enquiry
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/collections"
             className="inline-block border border-white/70 px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-white hover:text-ink"
           >
             Explore collections
-          </a>
+          </Link>
         </div>
         <p className="mt-16 text-[10px] uppercase tracking-[0.18em] text-white/50">
           Atmosphere photography. Not a product listing.
