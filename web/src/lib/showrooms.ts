@@ -6,9 +6,11 @@ export type Showroom = {
   plusCode: string;
   addressLine: string;
   mapsUrl: string;
+  /** Local display format and the international form used for tel: links. */
+  phone?: { display: string; e164: string };
 };
 
-// Opening hours and phone numbers have not been supplied, so none are shown.
+// Opening hours have not been supplied, and neither has the East Legon telephone, so none are shown.
 export const showrooms: Showroom[] = [
   {
     slug: "weija",
@@ -17,6 +19,7 @@ export const showrooms: Showroom[] = [
     plusCode: "HM2F+RCG",
     addressLine: "Gbawe, Weija",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=5.552011%2C-0.3264081",
+    phone: { display: "053 197 8362", e164: "+233531978362" },
   },
   {
     slug: "east-legon",

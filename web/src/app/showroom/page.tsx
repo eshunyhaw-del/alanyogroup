@@ -37,7 +37,17 @@ export default function ShowroomPage() {
                 <br />
                 <span className="text-warm">Plus code {s.plusCode}</span>
               </address>
-              <p className="mt-4 text-[13px] text-warm">Opening hours and telephone to be confirmed.</p>
+              {s.phone && (
+                <p className="mt-4 text-[15px] font-light">
+                  <span className="text-warm">Telephone </span>
+                  <a href={`tel:${s.phone.e164}`} className="border-b border-ink/40 hover:border-ink">
+                    {s.phone.display}
+                  </a>
+                </p>
+              )}
+              <p className="mt-4 text-[13px] text-warm">
+                {s.phone ? "Opening hours to be confirmed." : "Opening hours and telephone to be confirmed."}
+              </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
                   href={s.mapsUrl}
