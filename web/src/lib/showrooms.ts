@@ -16,7 +16,7 @@ export const showroomHours = [
   { days: "Sunday", time: "Closed" },
 ];
 
-// The East Legon telephone has not been supplied, so none is shown for it.
+const sharedPhone = { display: "053 197 8362", e164: "+233531978362" };
 export const showrooms: Showroom[] = [
   {
     slug: "weija",
@@ -25,7 +25,7 @@ export const showrooms: Showroom[] = [
     plusCode: "HM2F+RCG",
     addressLine: "Gbawe, Weija",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=5.552011%2C-0.3264081",
-    phone: { display: "053 197 8362", e164: "+233531978362" },
+    phone: sharedPhone, // one number serves both showrooms, at the owner's instruction
   },
   {
     slug: "east-legon",
@@ -34,5 +34,6 @@ export const showrooms: Showroom[] = [
     plusCode: "MVMM+X46",
     addressLine: "East Legon, Accra",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=MVMM%2BX46%2C%20Accra",
+    phone: sharedPhone,
   },
 ];
