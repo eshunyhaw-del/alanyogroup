@@ -10,7 +10,13 @@ export type Showroom = {
   phone?: { display: string; e164: string };
 };
 
-// Opening hours have not been supplied, and neither has the East Legon telephone, so none are shown.
+/** Supplied from the Weija listing and applied to both showrooms at the owner's instruction. */
+export const showroomHours = [
+  { days: "Monday to Saturday", time: "8 am – 5 pm" },
+  { days: "Sunday", time: "Closed" },
+];
+
+// The East Legon telephone has not been supplied, so none is shown for it.
 export const showrooms: Showroom[] = [
   {
     slug: "weija",

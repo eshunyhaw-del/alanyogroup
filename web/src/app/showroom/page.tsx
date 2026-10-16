@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ButtonLink, PageHeader } from "@/components/PageHeader";
-import { showrooms } from "@/lib/showrooms";
+import { showroomHours, showrooms } from "@/lib/showrooms";
 
 export const metadata: Metadata = { title: "Showrooms — Alanyo Group" };
 
@@ -37,17 +37,24 @@ export default function ShowroomPage() {
                 <br />
                 <span className="text-warm">Plus code {s.plusCode}</span>
               </address>
-              {s.phone && (
-                <p className="mt-4 text-[15px] font-light">
-                  <span className="text-warm">Telephone </span>
+              <p className="mt-4 text-[15px] font-light">
+                <span className="text-warm">Telephone </span>
+                {s.phone ? (
                   <a href={`tel:${s.phone.e164}`} className="border-b border-ink/40 hover:border-ink">
                     {s.phone.display}
                   </a>
-                </p>
-              )}
-              <p className="mt-4 text-[13px] text-warm">
-                {s.phone ? "Opening hours to be confirmed." : "Opening hours and telephone to be confirmed."}
+                ) : (
+                  <span className="text-warm">to be confirmed</span>
+                )}
               </p>
+              <dl className="mt-6 max-w-xs divide-y divide-stone text-[14px] font-light">
+                {showroomHours.map((h) => (
+                  <div key={h.days} className="flex justify-between gap-6 py-2">
+                    <dt className="text-warm">{h.days}</dt>
+                    <dd>{h.time}</dd>
+                  </div>
+                ))}
+              </dl>
               <div className="mt-8 flex flex-wrap gap-4">
                 <a
                   href={s.mapsUrl}
