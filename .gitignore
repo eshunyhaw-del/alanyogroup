@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+staticfiles/
+.claude/
+Claude/
+Assets/img/
+Assets/font/*.zip
+Assets/font/

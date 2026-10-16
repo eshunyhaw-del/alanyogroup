@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-porcelain: #f7f6f2;
+  --color-white: #ffffff;
+  --color-ink: #292b2a;
+  --color-stone: #e9e6e0;
+  --color-warm: #77746e;
+  --color-navy: #354253;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --ease-quiet: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+html {
+  background: var(--color-porcelain);
+  color: var(--color-ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-porcelain);
+}
+
+::selection {
+  background: var(--color-navy);
+  color: var(--color-porcelain);
+}
+
+:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* Intro reveals start hidden only when motion is allowed; GSAP restores them. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+  }
+}
