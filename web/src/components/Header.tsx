@@ -14,7 +14,7 @@ function useHydrated() {
 
 const primary = [
   { label: "Collections", href: "/collections" },
-  { label: "Showroom", href: "/showroom" },
+  { label: "Showrooms", href: "/showroom" },
   { label: "Materials", href: "/materials" },
   { label: "About", href: "/about" },
 ];

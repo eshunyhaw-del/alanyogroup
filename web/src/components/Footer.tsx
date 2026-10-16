@@ -8,7 +8,7 @@ const columns = [
     title: "Alanyo",
     links: [
       { label: "About", href: "/about" },
-      { label: "Showroom", href: "/showroom" },
+      { label: "Showrooms", href: "/showroom" },
       { label: "Materials", href: "/materials" },
     ],
   },
