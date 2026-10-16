@@ -1,5 +1,11 @@
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Collections } from "@/components/Collections";
+import { Craftsmanship } from "@/components/Craftsmanship";
 import { Hero } from "@/components/Hero";
+import { Invitation } from "@/components/Invitation";
+import { Ritual } from "@/components/Ritual";
+import { Sculpture } from "@/components/Sculpture";
 
 export default function Home() {
   return (
@@ -7,13 +13,13 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        {/* Scene 2, The Sculpture, arrives here in the next review step. */}
-        <section className="grid min-h-[60svh] place-items-center px-5 py-32">
-          <p className="max-w-md text-center text-[11px] uppercase tracking-[0.22em] text-warm">
-            Next scene: The Sculpture
-          </p>
-        </section>
+        <Sculpture />
+        <Craftsmanship />
+        <Ritual />
+        <Collections />
+        <Invitation />
       </main>
+      <Footer />
     </>
   );
 }
