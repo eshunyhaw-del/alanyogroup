@@ -1,3 +1,5 @@
+import catalogData from "@/data/catalog.json";
+
 export type Category = {
   slug: string;
   name: string;
@@ -25,7 +27,7 @@ export const categories: Category[] = [
   },
   {
     slug: "freestanding-baths",
-    name: "Freestanding Baths",
+    name: "Baths",
     blurb: "A quiet centrepiece for the bathroom.",
     image: "/images/col-baths.webp",
     imageAlt: "A freestanding bath beside a tiled wall in soft daylight",
@@ -59,66 +61,47 @@ export const categories: Category[] = [
 ];
 
 export type Product = {
+  id: number;
   slug: string;
   name: string;
+  sku: string | null;
   categorySlug: string;
-  summary: string;
-  /** Price in pesewas (1 GHS = 100 pesewas). null means the price is not yet confirmed. */
+  /** Selling price in pesewas (1 GHS = 100 pesewas). null means no price is set. */
   pricePesewas: number | null;
+  /** The previous price, shown struck through when it is higher than the selling price. */
+  compareAtPesewas: number | null;
+  inStock: boolean;
+  summary: string;
+  features: string[];
+  specs: { name: string; value: string }[];
+  description: string[];
+  /** Photographs have not been supplied yet. Products render a placeholder until they are. */
   image?: string;
   imageAlt?: string;
-  /** True for development-only demo entries. They never ship to production. */
-  isSample?: boolean;
 };
 
-// Demo entries exist only in development so the cart and checkout can be exercised. Their
-// names, summaries and prices are NOT real catalogue data. In production this list is empty
-// until the Django catalogue API supplies products.
-const sampleProducts: Product[] = [
-  {
-    slug: "sample-water-closet",
-    name: "Sample Water Closet",
-    categorySlug: "water-closets",
-    summary: "Demonstration entry for layout testing. Not a real product.",
-    pricePesewas: 100000,
-    image: "/images/col-water-closets.webp",
-    imageAlt: "Atmosphere photograph of a wall-hung water closet",
-    isSample: true,
-  },
-  {
-    slug: "sample-vanity-cabinet",
-    name: "Sample Vanity Cabinet",
-    categorySlug: "vanity-cabinets",
-    summary: "Demonstration entry for layout testing. Not a real product.",
-    pricePesewas: 250000,
-    image: "/images/col-vanities.webp",
-    imageAlt: "Atmosphere photograph of a walnut vanity",
-    isSample: true,
-  },
-  {
-    slug: "sample-freestanding-bath",
-    name: "Sample Freestanding Bath",
-    categorySlug: "freestanding-baths",
-    summary: "Demonstration entry with no confirmed price. Not a real product.",
-    pricePesewas: null,
-    image: "/images/col-baths.webp",
-    imageAlt: "Atmosphere photograph of a freestanding bath",
-    isSample: true,
-  },
-];
+// Interim source: data/catalog.json is generated from the WooCommerce export by
+// tools/import_woocommerce.py. It is replaced by the Django catalogue API later.
+const products = catalogData as unknown as Product[];
 
 export function getProducts(): Product[] {
-  return process.env.NODE_ENV === "development" ? sampleProducts : [];
+  return products;
 }
 
 export function getProduct(slug: string) {
-  return getProducts().find((p) => p.slug === slug);
+  return products.find((p) => p.slug === slug);
 }
 
 export function getCategory(slug: string) {
   return categories.find((c) => c.slug === slug);
 }
 
+export function productsIn(categorySlug: string) {
+  return products.filter((p) => p.categorySlug === categorySlug);
+}
+
 export function formatGHS(pesewas: number) {
-  return new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS" }).format(pesewas / 100);
+  return new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS", maximumFractionDigits: 0 }).format(
+    pesewas / 100,
+  );
 }

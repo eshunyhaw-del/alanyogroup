@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ButtonLink, PageHeader } from "@/components/PageHeader";
 import { ProductCard } from "@/components/ProductCard";
-import { categories, getCategory, getProducts } from "@/lib/catalog";
+import { categories, getCategory, productsIn } from "@/lib/catalog";
 
 export function generateStaticParams() {
   return categories.map((c) => ({ slug: c.slug }));
@@ -19,11 +19,11 @@ export default async function CategoryPage({ params }: PageProps<"/collections/[
   const category = getCategory(slug);
   if (!category) notFound();
 
-  const products = getProducts().filter((p) => p.categorySlug === category.slug);
+  const products = productsIn(category.slug);
 
   return (
     <main>
-      <PageHeader kicker="Collections" title={category.name} intro={category.blurb} />
+      <PageHeader kicker="Collections" title={category.name} intro={`${category.blurb}${products.length ? ` ${products.length} ${products.length === 1 ? "piece" : "pieces"}.` : ""}`} />
       <div className="mx-auto max-w-[1800px] px-5 pb-32 sm:px-8 lg:px-14">
         {products.length > 0 ? (
           <ul className="grid gap-x-6 gap-y-16 md:grid-cols-2 lg:grid-cols-3">

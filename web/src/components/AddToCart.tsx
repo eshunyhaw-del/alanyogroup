@@ -10,6 +10,20 @@ export function AddToCart({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
+  if (!product.inStock) {
+    return (
+      <div>
+        <p className="mb-5 text-[13px] text-warm">Currently out of stock.</p>
+        <Link
+          href={`/contact?product=${encodeURIComponent(product.slug)}`}
+          className="inline-block border border-ink px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-ink hover:text-porcelain"
+        >
+          Ask about availability
+        </Link>
+      </div>
+    );
+  }
+
   if (product.pricePesewas === null) {
     return (
       <Link

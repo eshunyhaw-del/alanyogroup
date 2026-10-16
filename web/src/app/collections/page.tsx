@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
-import { categories } from "@/lib/catalog";
+import { categories, productsIn } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Collections — Alanyo Group" };
 
@@ -32,7 +32,10 @@ export default function CollectionsPage() {
                 )}
               </div>
               <h2 className="mt-5 text-xl font-light tracking-tight">{c.name}</h2>
-              <p className="mt-2 max-w-sm text-[14px] font-light leading-[1.7] text-ink/70">{c.blurb}</p>
+              <p className="mt-2 max-w-sm text-[14px] font-light leading-[1.7] text-ink/70">
+                {c.blurb}
+                {productsIn(c.slug).length > 0 && ` ${productsIn(c.slug).length} pieces.`}
+              </p>
             </Link>
           </li>
         ))}
