@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { AddToCart } from "@/components/AddToCart";
 import { Price } from "@/components/Price";
 import { getCategory, getProduct, getProducts } from "@/lib/catalog";
@@ -19,7 +20,15 @@ export async function generateMetadata({ params }: PageProps<"/products/[slug]">
   };
 }
 
-export default async function ProductPage({ params }: PageProps<"/products/[slug]">) {
+export default function ProductPage({ params }: PageProps<"/products/[slug]">) {
+  return (
+    <Suspense fallback={<div className="min-h-svh" />}>
+      <ProductDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">["params"] }) {
   const { slug } = await params;
   const product = getProduct(slug);
   if (!product) notFound();

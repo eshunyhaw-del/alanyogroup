@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart";
@@ -78,9 +79,17 @@ export function Header() {
         <Link
           href="/"
           aria-label="Alanyo Group, home"
-          className="text-[13px] font-semibold uppercase tracking-[0.42em]"
+          className="flex items-center gap-3 justify-self-center"
         >
-          Alanyo
+          <Image
+            src={light ? "/brand/mark-porcelain.png" : "/brand/mark-colour.png"}
+            alt=""
+            width={675}
+            height={687}
+            priority
+            className="h-9 w-auto"
+          />
+          <span className="hidden text-[13px] font-semibold uppercase tracking-[0.42em] sm:inline">Alanyo</span>
         </Link>
 
         <div className="flex items-center justify-end gap-6 text-[11px] font-medium uppercase tracking-[0.18em] sm:gap-9">

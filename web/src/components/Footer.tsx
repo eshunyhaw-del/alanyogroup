@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/catalog";
 
@@ -28,7 +29,7 @@ export function Footer() {
       <div className="mx-auto max-w-[1800px] px-5 pb-10 pt-20 sm:px-8 lg:px-14 lg:pt-28">
         <div className="grid gap-14 md:grid-cols-12">
           <div className="md:col-span-5">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.42em]">Alanyo</p>
+            <Image src="/brand/logo-colour.png" alt="Alanyo Group" width={953} height={675} className="h-32 w-auto" />
             <p className="mt-6 max-w-xs text-[15px] font-light leading-[1.8] text-ink/75">
               The Art of Refined Living. Luxury sanitaryware and fixtures for the bathroom and kitchen.
             </p>
