@@ -17,6 +17,9 @@ DEBUG = env("DEBUG")
 # No insecure default outside DEBUG: production must supply SECRET_KEY.
 SECRET_KEY = env("SECRET_KEY", default="dev-only-not-a-secret" if DEBUG else environ.Env.NOTSET)
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+if env("VERCEL", default=""):
+    # Deployment and preview URLs on Vercel. Add custom domains through ALLOWED_HOSTS.
+    ALLOWED_HOSTS = [*ALLOWED_HOSTS, ".vercel.app"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
