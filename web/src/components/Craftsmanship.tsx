@@ -104,7 +104,7 @@ export function Craftsmanship() {
               href="/collections/vanity-cabinets"
               className="mt-10 inline-block border border-ink/70 px-7 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-ink hover:text-porcelain"
             >
-              View vanities
+              View cabinets
             </Link>
           </div>
 
