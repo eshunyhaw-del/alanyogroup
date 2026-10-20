@@ -1,44 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { type Tone, toneAt } from "@/lib/tone";
 
 // 053 197 8362 in international form, as wa.me expects (no plus sign or spaces).
 const NUMBER = "233531978362";
 const MESSAGE = "Hello Alanyo Group, I would like to ask about your products.";
 const HREF = `https://wa.me/${NUMBER}?text=${encodeURIComponent(MESSAGE)}`;
 
-type Tone = "light" | "dark";
-
 export function WhatsAppButton() {
   const ref = useRef<HTMLAnchorElement>(null);
-  // Phones: hidden until the visitor starts scrolling, then it fades in quietly.
-  const [scrolled, setScrolled] = useState(false);
+  // Phones: hidden until the visitor nears the footer, then it fades in quietly.
+  const [nearFooter, setNearFooter] = useState(false);
   // The colour of whatever is behind the icon. Sections that are dark or photographic carry
   // data-tone="dark"; everything else is treated as light.
   const [tone, setTone] = useState<Tone>("light");
 
   useEffect(() => {
-    let frame = 0;
     const update = () => {
-      frame = 0;
-      setScrolled(window.scrollY > 40);
+      // Show once the footer is within about one screen of coming into view.
+      const footer = document.querySelector("footer");
+      setNearFooter(!!footer && footer.getBoundingClientRect().top < window.innerHeight * 2);
       const el = ref.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
-      const stack = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-      const behind = stack.find((n) => !el.contains(n) && n.closest("[data-tone]"));
-      setTone(behind?.closest("[data-tone]")?.getAttribute("data-tone") === "dark" ? "dark" : "light");
+      setTone(toneAt(r.left + r.width / 2, r.top + r.height / 2, el));
     };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
+    // The work is a few layout reads and two state setters that bail out when nothing changed,
+    // so it runs directly on scroll rather than behind an animation-frame guard.
     update();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
     };
   }, []);
 
@@ -56,7 +51,7 @@ export function WhatsAppButton() {
         md:text-[11px] md:font-medium md:uppercase md:tracking-[0.18em] md:text-porcelain md:hover:bg-navy
         ${tone === "dark" ? "text-white" : "text-ink"}
         ${
-          scrolled
+          nearFooter
             ? "opacity-80 ease-quiet md:opacity-100"
             : "pointer-events-none opacity-0 ease-quiet md:pointer-events-auto md:opacity-100"
         }`}

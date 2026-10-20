@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useCart } from "@/lib/cart";
 import { categories } from "@/lib/categories";
+import { type Tone, toneAt } from "@/lib/tone";
 
 const noopSubscribe = () => () => {};
 // False during server render and hydration, true afterwards, so client-only values never mismatch.
@@ -36,6 +37,8 @@ function Chevron({ open }: { open: boolean }) {
 
 export function Header() {
   const [solid, setSolid] = useState(false);
+  // Tone of the page just under the header bar, so the bar and logo follow the section below.
+  const [tone, setTone] = useState<Tone>("light");
   const [open, setOpen] = useState(false);
   // The path a menu was opened on. A menu counts as open only while the page is still that path,
   // so navigating closes it without an effect.
@@ -49,11 +52,15 @@ export function Header() {
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > window.innerHeight * 0.85);
+    const onScroll = () => {
+      setSolid(window.scrollY > window.innerHeight * 0.85);
+      setTone(toneAt(window.innerWidth / 2, 84, headerRef.current));
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    // Re-read the page beneath the bar whenever the route changes.
+  }, [pathname]);
 
   useEffect(() => {
     if (!open && !shopOpen) return;
@@ -76,7 +83,9 @@ export function Header() {
     };
   }, [open, shopOpen]);
 
+  // Transparent over the home hero; after that the bar takes the tone of the section beneath it.
   const light = onHome && !(solid || open || shopOpen);
+  const ink = !light && tone === "dark" && !open && !shopOpen;
   const closeAll = () => {
     setOpen(false);
     setShopAt(null);
@@ -86,14 +95,14 @@ export function Header() {
     <header
       ref={headerRef}
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,color] duration-500 ease-quiet ${
-        light ? "bg-transparent text-white" : "bg-porcelain text-ink"
+        light ? "bg-transparent text-white" : ink ? "bg-ink text-porcelain" : "bg-porcelain text-ink"
       }`}
     >
       <nav
         aria-label="Primary"
         className="mx-auto grid h-20 max-w-[1800px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 lg:px-14"
       >
-        <ul className="hidden items-center gap-9 text-[11px] font-medium uppercase tracking-[0.18em] xl:flex">
+        <ul className="hidden items-center gap-8 text-[11px] font-medium uppercase tracking-[0.18em] xl:flex">
           <li>
             <Link
               href="/"
@@ -138,14 +147,14 @@ export function Header() {
 
         <Link href="/" aria-label="Alanyo Group, home" className="flex items-center gap-3 justify-self-center">
           <Image
-            src={light ? "/brand/mark-porcelain.png" : "/brand/mark-colour.png"}
+            src={light || ink ? "/brand/mark-porcelain.png" : "/brand/mark-colour.png"}
             alt=""
             width={675}
             height={687}
             priority
             className="h-9 w-auto"
           />
-          <span className="hidden text-[13px] font-semibold uppercase tracking-[0.42em] sm:inline">Alanyo</span>
+          <span className="hidden text-[12px] font-semibold uppercase tracking-[0.3em] sm:inline">Alanyo Group</span>
         </Link>
 
         <div className="flex items-center justify-end gap-6 text-[11px] font-medium uppercase tracking-[0.18em] sm:gap-9">
