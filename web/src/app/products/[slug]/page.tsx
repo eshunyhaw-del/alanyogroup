@@ -65,7 +65,11 @@ async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">
           <AddToCart product={product} />
         </div>
         <p className="mt-10 border-t border-stone pt-6 text-[13px] font-light leading-[1.7] text-warm">
-          Delivery, returns and warranty terms will be confirmed by Alanyo Group before this store opens.
+          Delivery is described in our{" "}
+          <Link href="/delivery" className="border-b border-ink/40 text-ink hover:border-ink">
+            shipping policy
+          </Link>
+          . Returns and warranty terms will be confirmed by Alanyo Group before this store opens.
         </p>
       </div>
 

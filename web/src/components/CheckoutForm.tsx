@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ButtonLink } from "@/components/PageHeader";
 import { Field, TextArea } from "@/components/Field";
 import { useCart } from "@/lib/cart";
@@ -69,7 +70,11 @@ export function CheckoutForm() {
             </div>
             <div className="flex justify-between text-warm">
               <dt>Delivery</dt>
-              <dd>To be confirmed</dd>
+              <dd>
+                <Link href="/delivery" className="border-b border-ink/30 hover:border-ink">
+                  See shipping policy
+                </Link>
+              </dd>
             </div>
           </dl>
           <button
