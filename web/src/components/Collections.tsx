@@ -114,7 +114,7 @@ export function Collections() {
         <div className="mb-14 grid gap-8 md:mb-20 md:grid-cols-12 md:items-end">
           <div className="md:col-span-8">
             <p data-head className="mb-8 text-[11px] font-medium uppercase tracking-[0.22em] text-warm">
-              05 — The Collections
+              The Collections
             </p>
             <h2
               data-head

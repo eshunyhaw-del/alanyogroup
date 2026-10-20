@@ -55,7 +55,7 @@ export function Invitation() {
 
       <div className="relative z-10 mx-auto max-w-3xl px-5 py-32 text-center sm:px-8">
         <p data-rise className="mb-8 text-[11px] font-medium uppercase tracking-[0.22em] text-white/75">
-          06 — The Invitation
+          The Invitation
         </p>
         <h2
           data-rise

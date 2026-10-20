@@ -71,7 +71,7 @@ export function Ritual() {
 
         <div className="relative md:order-1 md:col-span-5 md:col-start-1">
           <p className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-porcelain/60">
-            04 — The Ritual
+            The Ritual
           </p>
           <div className="relative min-h-[11rem] md:min-h-[22rem]">
             <div data-copy="1" className="absolute inset-0">

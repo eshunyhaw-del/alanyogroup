@@ -63,7 +63,7 @@ export function Craftsmanship() {
             data-rise
             className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm md:col-span-3"
           >
-            03 — The Craftsmanship
+            The Craftsmanship
           </p>
           <h2
             data-rise
