@@ -72,7 +72,15 @@ async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">
           <Link href="/delivery" className="border-b border-ink/40 text-ink hover:border-ink">
             shipping policy
           </Link>
-          . Returns and warranty terms will be confirmed by Alanyo Group before this store opens.
+          . Broken items can be returned within 7 days (see our{" "}
+          <Link href="/returns" className="border-b border-ink/40 text-ink hover:border-ink">
+            returns policy
+          </Link>
+          ), and every purchase has a{" "}
+          <Link href="/warranty" className="border-b border-ink/40 text-ink hover:border-ink">
+            5-year warranty
+          </Link>
+          .
         </p>
       </div>
 

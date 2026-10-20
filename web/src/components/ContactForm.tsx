@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Field, TextArea } from "@/components/Field";
-import { SALES_EMAIL } from "@/lib/contact";
+import { SALES_EMAIL, WHATSAPP_NUMBER_E164 } from "@/lib/contact";
 
 type Topic = "general" | "abroad" | "projects" | "product";
 
@@ -29,6 +29,28 @@ export function ContactForm() {
   );
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+
+  // WhatsApp is the main way to reach us: it opens the chat with the details already typed in.
+  function sendOnWhatsApp(form: HTMLFormElement) {
+    const data = new FormData(form);
+    const name = String(data.get("name") ?? "").trim();
+    const phone = String(data.get("phone") ?? "").trim();
+    if (name.length < 2) {
+      setError("Please enter your name so we know who is writing.");
+      document.getElementById("name")?.focus();
+      return;
+    }
+    if (message.trim().length < 10) {
+      setError("Please tell us a little about what you need.");
+      document.getElementById("message")?.focus();
+      return;
+    }
+    setError(null);
+    const text = [`Hello Alanyo Group, my name is ${name}.`, message.trim(), phone ? `My phone number: ${phone}` : ""]
+      .filter(Boolean)
+      .join("\n\n");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER_E164}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,10 +81,10 @@ export function ContactForm() {
       setError(
         response.status === 429
           ? "Too many messages sent. Please wait a minute and try again."
-          : first?.[0] ?? "We could not send your message. Please try again, or email us directly.",
+          : first?.[0] ?? "We could not send your message. Please try WhatsApp, or email us directly.",
       );
     } catch {
-      setError("We could not reach the server. Please check your connection, or email us directly.");
+      setError("We could not reach the server. Please try WhatsApp, or email us directly.");
     }
     setStatus("error");
   }
@@ -79,11 +101,25 @@ export function ContactForm() {
   }
 
   return (
-    <form className="max-w-2xl space-y-8" onSubmit={onSubmit} noValidate={false}>
+    <form className="max-w-2xl space-y-8" onSubmit={onSubmit}>
       <Field label="Full name" name="name" autoComplete="name" required minLength={2} maxLength={120} />
       <div className="grid gap-8 sm:grid-cols-2">
-        <Field label="Email" name="email" type="email" autoComplete="email" required maxLength={254} />
-        <Field label="Phone" name="phone" type="tel" autoComplete="tel" maxLength={30} hint="Optional. Include your country code if you are abroad." />
+        <Field
+          label="Phone"
+          name="phone"
+          type="tel"
+          autoComplete="tel"
+          maxLength={30}
+          hint="Optional. Include your country code if you are abroad."
+        />
+        <Field
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          maxLength={254}
+          hint="Needed only if you send by email."
+        />
       </div>
       <TextArea
         label="How can we help?"
@@ -110,15 +146,25 @@ export function ContactForm() {
       )}
 
       <div>
-        <button
-          type="submit"
-          disabled={status === "sending"}
-          className="border border-ink bg-ink px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-porcelain transition-colors duration-500 ease-quiet hover:bg-transparent hover:text-ink disabled:cursor-wait disabled:opacity-50"
-        >
-          {status === "sending" ? "Sending…" : "Send enquiry"}
-        </button>
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+          <button
+            type="button"
+            onClick={(e) => sendOnWhatsApp(e.currentTarget.form as HTMLFormElement)}
+            className="border border-ink bg-ink px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-porcelain transition-colors duration-500 ease-quiet hover:bg-transparent hover:text-ink"
+          >
+            Contact us on WhatsApp
+          </button>
+          <button
+            type="submit"
+            disabled={status === "sending"}
+            className="border-b border-ink/50 pb-1 text-[11px] font-medium uppercase tracking-[0.2em] hover:opacity-60 disabled:cursor-wait disabled:opacity-50"
+          >
+            {status === "sending" ? "Sending…" : "Or send by email"}
+          </button>
+        </div>
         <p className="mt-5 text-[12px] leading-[1.7] text-warm">
-          We use your details only to reply to you. See our{" "}
+          WhatsApp opens a chat with your message ready to send, and is the fastest way to reach us. We use your details
+          only to reply to you. See our{" "}
           <Link href="/privacy" className="border-b border-ink/30 hover:border-ink">
             Privacy Policy
           </Link>

@@ -13,7 +13,7 @@ export default function ContactPage() {
       <PageHeader
         kicker="Contact"
         title="Let us help you compose the room."
-        intro="Tell us about your project and we will come back to you."
+        intro="The quickest way to reach us is WhatsApp. Tell us about your project and we will come back to you."
       />
       <div className="mx-auto grid max-w-[1800px] gap-16 px-5 pb-32 sm:px-8 md:grid-cols-12 md:gap-8 lg:px-14">
         <div className="md:col-span-7">

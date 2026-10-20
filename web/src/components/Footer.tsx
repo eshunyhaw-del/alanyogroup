@@ -22,7 +22,7 @@ const columns = [
       { label: "Contact", href: "/contact" },
       { label: "Delivery", href: "/delivery" },
       { label: "Returns", href: "/returns" },
-      { label: "Warranty", href: "/warranty" },
+      { label: "5-Year Warranty", href: "/warranty" },
     ],
   },
 ];
