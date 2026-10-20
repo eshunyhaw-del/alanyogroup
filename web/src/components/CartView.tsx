@@ -79,7 +79,7 @@ export function CartView() {
             <ButtonLink href="/checkout">Checkout as guest</ButtonLink>
           </div>
           <p className="mt-6 text-[12px] leading-[1.7] text-warm">
-            Orders of GHS 16,000 and above qualify for free delivery within Greater Accra. No account needed. Final prices are confirmed by our server when you pay.
+            Orders of GHS 16,000 or more qualify for free delivery within Greater Accra. No account needed. Final prices are confirmed by our server when you pay.
           </p>
         </div>
       </aside>
