@@ -105,7 +105,6 @@ function OrderSummary({
         <Link href="/cart" className="border-b border-ink/30 hover:border-ink">
           Edit cart
         </Link>
-        . The final amount is confirmed by our server when you pay.
       </p>
     </div>
   );
