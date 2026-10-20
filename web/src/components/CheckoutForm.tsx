@@ -412,22 +412,6 @@ export function CheckoutForm() {
             </p>
           </section>
 
-          <section className="mt-10" aria-labelledby="payment-title">
-            <h2 id="payment-title" className={sectionTitle}>
-              Payment
-            </h2>
-            <p className="mt-1 text-[12px] text-warm">Payments are processed securely by Paystack.</p>
-            <div className="mt-3 border border-ink bg-white">
-              <div className="flex items-center justify-between px-4 py-3 text-[14px]">
-                <span>Paystack</span>
-                <span className="text-[12px] text-warm">Card · Mobile money · Bank transfer</span>
-              </div>
-              <p className="border-t border-stone bg-stone/40 px-4 py-4 text-center text-[13px] text-ink/80">
-                You will be redirected to Paystack to complete your purchase.
-              </p>
-            </div>
-          </section>
-
           <div className="mt-8">
             <label className="flex cursor-pointer items-start gap-3 text-[13px] font-light leading-[1.7] text-ink/80">
               <input
@@ -493,11 +477,10 @@ export function CheckoutForm() {
             disabled={busy}
             className="mt-6 w-full border border-ink bg-ink px-8 py-5 text-[13px] font-medium tracking-[0.04em] text-porcelain transition-colors duration-500 ease-quiet hover:bg-transparent hover:text-ink disabled:cursor-wait disabled:opacity-50"
           >
-            {busy ? "Connecting to Paystack…" : `Pay now · ${formatGHS(subtotalPesewas)}`}
+            {busy ? "Please wait…" : `Pay now · ${formatGHS(subtotalPesewas)}`}
           </button>
           <p className="mt-4 text-center text-[12px] leading-[1.7] text-warm">
-            We never see or store your card or mobile money details. Your order is confirmed only after the payment is
-            verified.
+            Your order is confirmed once your payment is received.
           </p>
 
           <nav aria-label="Policies" className="mt-10 flex gap-6 border-t border-stone pt-6 text-[12px]">
