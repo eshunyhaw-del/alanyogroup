@@ -36,7 +36,7 @@ const tiles: Tile[] = [
     aspect: "aspect-[4/3] md:aspect-auto md:min-h-[20rem] md:flex-1",
   },
   {
-    name: "Baths",
+    name: "Bathtubs",
     href: "/collections/freestanding-baths",
     image: "/images/col-baths.webp",
     alt: "A freestanding bath beside a tiled wall in soft daylight",

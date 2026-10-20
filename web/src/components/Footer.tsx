@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/catalog";
+import { PHONE, SALES_EMAIL } from "@/lib/contact";
 
 const columns = [
   { title: "Collections", links: categories.map((c) => ({ label: c.name, href: `/collections/${c.slug}` })) },
@@ -10,6 +11,8 @@ const columns = [
       { label: "About", href: "/about" },
       { label: "Showrooms", href: "/showroom" },
       { label: "Materials", href: "/materials" },
+      { label: "Customers Abroad", href: "/abroad" },
+      { label: "Major Projects", href: "/projects" },
     ],
   },
   {
@@ -33,6 +36,14 @@ export function Footer() {
             <p className="mt-6 max-w-xs text-[15px] font-light leading-[1.8] text-ink/75">
               The Art of Refined Living. Luxury sanitaryware and fixtures for the bathroom and kitchen.
             </p>
+            <div className="mt-6 text-[14px] font-light leading-[1.8]">
+              <a href={`mailto:${SALES_EMAIL}`} className="block border-b border-transparent hover:border-ink w-fit">
+                {SALES_EMAIL}
+              </a>
+              <a href={`tel:${PHONE.e164}`} className="block border-b border-transparent hover:border-ink w-fit">
+                {PHONE.display}
+              </a>
+            </div>
           </div>
           {columns.map((c, i) => (
             <nav

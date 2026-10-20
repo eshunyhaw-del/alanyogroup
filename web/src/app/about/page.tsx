@@ -22,7 +22,7 @@ export default function Page() {
         </div>
         <div className="space-y-6 md:col-span-4 md:col-start-9 md:pt-8">
             <p className="text-[15px] font-light leading-[1.8] text-ink/75">We believe a bathroom or kitchen should feel composed, calm and considered, closer to a well-made room in a fine home than to a catalogue page.</p>
-            <p className="text-[15px] font-light leading-[1.8] text-ink/75">We offer water closets, vanity cabinets, freestanding baths, rainfall showers, wash basins, kitchen sinks and fixtures, and water heaters.</p>
+            <p className="text-[15px] font-light leading-[1.8] text-ink/75">We offer water closets, vanity cabinets, bathtubs, rainfall showers, wash basins, kitchen sinks and fixtures, and water heaters.</p>
           <div className="pt-4">
             <ButtonLink href="/collections">Explore collections</ButtonLink>
           </div>

@@ -29,7 +29,7 @@ export const categories: Category[] = [
   },
   {
     slug: "freestanding-baths",
-    name: "Baths",
+    name: "Bathtubs",
     blurb: "A quiet centrepiece for the bathroom.",
     image: "/images/col-baths.webp",
     imageAlt: "A freestanding bath beside a tiled wall in soft daylight",

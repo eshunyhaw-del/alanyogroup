@@ -33,7 +33,9 @@ PAYSTACK_CURRENCY = "GHS"
 PAYSTACK_WEBHOOK_IPS = [ip.strip() for ip in env.list("PAYSTACK_WEBHOOK_IPS", default=[]) if ip.strip()]
 
 ORDER_NOTIFY_EMAILS = [e.strip() for e in env("ORDER_NOTIFY_EMAILS") if e.strip()]
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Alanyo Group <no-reply@alanyogroup.com>")
+# Where website enquiries are sent.
+ENQUIRY_EMAILS = [e.strip() for e in env.list("ENQUIRY_EMAILS", default=["sales@alanyogroup.com"]) if e.strip()]
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Alanyo Group <sales@alanyogroup.com>")
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
     "apps.carts",
     "apps.orders",
     "apps.payments",
+    "apps.enquiries",
 ]
 
 MIDDLEWARE = [
@@ -118,7 +121,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"anon": "120/min", "checkout": "10/min", "order_lookup": "40/min"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "120/min", "checkout": "10/min", "order_lookup": "40/min", "enquiry": "5/min"},
     "UNAUTHENTICATED_USER": None,
 }
 

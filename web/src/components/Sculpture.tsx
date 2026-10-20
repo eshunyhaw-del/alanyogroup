@@ -72,7 +72,7 @@ export function Sculpture() {
             href="/collections/freestanding-baths"
             className="mt-10 inline-block border border-porcelain/60 px-7 py-4 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-porcelain hover:text-ink"
           >
-            View baths
+            View bathtubs
           </Link>
         </div>
 
