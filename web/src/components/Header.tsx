@@ -129,7 +129,7 @@ export function Header() {
                 setSearchAt(null);
                 setShopAt(shopOpen ? null : pathname);
               }}
-              className="flex items-center gap-2 opacity-90 transition-opacity hover:opacity-60"
+              className="flex items-center gap-2 uppercase opacity-90 transition-opacity hover:opacity-60"
             >
               Shop
               <Chevron open={shopOpen} />
