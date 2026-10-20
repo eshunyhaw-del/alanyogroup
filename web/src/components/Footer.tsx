@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/catalog";
 import { PHONE, SALES_EMAIL } from "@/lib/contact";
+import { SOCIAL } from "@/lib/social";
 
 const columns = [
   { title: "Collections", links: categories.map((c) => ({ label: c.name, href: `/collections/${c.slug}` })) },
@@ -44,6 +45,31 @@ export function Footer() {
                 {PHONE.display}
               </a>
             </div>
+
+            <nav aria-label="Social media" className="mt-8">
+              <h2 className="mb-4 text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Follow us</h2>
+              <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-medium uppercase tracking-[0.18em]">
+                {SOCIAL.map((s) => (
+                  <li key={s.label}>
+                    {s.url ? (
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-opacity hover:opacity-60"
+                      >
+                        {s.label}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    ) : (
+                      <span className="text-warm/70" aria-disabled="true">
+                        {s.label}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
           {columns.map((c, i) => (
             <nav
