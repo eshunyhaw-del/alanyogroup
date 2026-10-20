@@ -54,9 +54,6 @@ export function Invitation() {
       <div aria-hidden className="absolute inset-0 bg-ink/55" />
 
       <div className="relative z-10 mx-auto max-w-3xl px-5 py-32 text-center sm:px-8">
-        <p data-rise className="mb-8 text-[11px] font-medium uppercase tracking-[0.22em] text-white/75">
-          The Invitation
-        </p>
         <h2
           data-rise
           className="text-[clamp(2.5rem,5.4vw,5.5rem)] font-light leading-[1.04] tracking-[-0.025em]"
