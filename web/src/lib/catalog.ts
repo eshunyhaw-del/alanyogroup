@@ -48,6 +48,37 @@ export function getCategory(slug: string) {
   return categories.find((c) => c.slug === slug);
 }
 
+// When a collection has too few pieces to fill a "similar products" row, borrow from one that shoppers
+// commonly buy alongside it.
+const RELATED: Record<string, string[]> = {
+  "water-closets": ["wash-basins", "vanity-cabinets"],
+  "vanity-cabinets": ["wash-basins", "water-closets"],
+  "wash-basins": ["vanity-cabinets", "water-closets"],
+  "freestanding-baths": ["rainfall-showers", "wash-basins"],
+  "rainfall-showers": ["freestanding-baths", "water-heaters"],
+  kitchen: ["water-heaters"],
+  "water-heaters": ["rainfall-showers", "kitchen"],
+};
+
+/**
+ * Products to suggest beside this one: the same collection first (closest in price, in stock before out of
+ * stock), then related collections. Never includes the product itself.
+ */
+export function similarProducts(product: Product, limit = 4): Product[] {
+  const byCloseness = (a: Product, b: Product) => {
+    if (a.inStock !== b.inStock) return a.inStock ? -1 : 1;
+    const target = product.pricePesewas ?? 0;
+    const gap = (p: Product) => Math.abs((p.pricePesewas ?? target) - target);
+    return gap(a) - gap(b) || a.name.localeCompare(b.name);
+  };
+  const same = products.filter((p) => p.slug !== product.slug && p.categorySlug === product.categorySlug).sort(byCloseness);
+  if (same.length >= limit) return same.slice(0, limit);
+  const related = (RELATED[product.categorySlug] ?? []).flatMap((slug) =>
+    products.filter((p) => p.categorySlug === slug).sort(byCloseness),
+  );
+  return [...same, ...related].slice(0, limit);
+}
+
 export function productsIn(categorySlug: string) {
   return products.filter((p) => p.categorySlug === categorySlug);
 }

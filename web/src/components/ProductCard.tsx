@@ -26,12 +26,12 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         )}
       </div>
-      <div className="mt-5 flex items-baseline justify-between gap-6">
+      <div className="mt-5 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
         <div>
           <h3 className="text-lg font-light leading-snug tracking-tight">{product.name}</h3>
           {product.sku && <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-warm">{product.sku}</p>}
         </div>
-        <Price product={product} className="shrink-0 text-right text-[14px]" />
+        <Price product={product} className="text-[14px] sm:shrink-0 sm:text-right" />
       </div>
     </Link>
   );

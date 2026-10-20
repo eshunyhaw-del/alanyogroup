@@ -5,7 +5,9 @@ import { Suspense } from "react";
 import { AddToCart } from "@/components/AddToCart";
 import { ProductGallery } from "@/components/ProductGallery";
 import { Price } from "@/components/Price";
-import { getCategory, getProduct, getProducts } from "@/lib/catalog";
+import { ProductCard } from "@/components/ProductCard";
+import { RiseIn } from "@/components/RiseIn";
+import { getCategory, getProduct, getProducts, similarProducts } from "@/lib/catalog";
 
 export function generateStaticParams() {
   return getProducts().map((p) => ({ slug: p.slug }));
@@ -33,6 +35,7 @@ async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">
   const product = getProduct(slug);
   if (!product) notFound();
   const category = getCategory(product.categorySlug);
+  const similar = similarProducts(product);
 
   return (
     <main className="mx-auto grid max-w-[1800px] gap-12 px-5 pb-32 pt-32 sm:px-8 md:grid-cols-12 md:gap-8 lg:px-14 lg:pt-40">
@@ -99,6 +102,29 @@ async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">
             </section>
           )}
         </div>
+      )}
+
+      {similar.length > 0 && (
+        <RiseIn as="section" className="border-t border-stone pt-16 md:col-span-12" >
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <h2 className="text-[clamp(1.75rem,3vw,2.75rem)] font-light tracking-[-0.02em]">Similar products</h2>
+            {category && (
+              <Link
+                href={`/collections/${category.slug}`}
+                className="border-b border-ink/50 pb-1 text-[11px] font-medium uppercase tracking-[0.2em] hover:opacity-60"
+              >
+                View all {category.name}
+              </Link>
+            )}
+          </div>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-4 md:gap-x-6">
+            {similar.map((p) => (
+              <li key={p.slug}>
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
+        </RiseIn>
       )}
     </main>
   );
