@@ -27,9 +27,12 @@ body {
   color: var(--color-porcelain);
 }
 
-:focus-visible {
-  outline: 1px solid currentColor;
-  outline-offset: 4px;
+/* In the base layer so utility classes such as outline-none can override it where needed. */
+@layer base {
+  :focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 4px;
+  }
 }
 
 /* Intro reveals start hidden only when motion is allowed; GSAP restores them. */

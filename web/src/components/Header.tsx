@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useCart } from "@/lib/cart";
+import { SearchPanel } from "@/components/SearchPanel";
 import { categories } from "@/lib/categories";
 import { type Tone, toneAt } from "@/lib/tone";
 
@@ -43,12 +44,14 @@ export function Header() {
   // The path a menu was opened on. A menu counts as open only while the page is still that path,
   // so navigating closes it without an effect.
   const [shopAt, setShopAt] = useState<string | null>(null);
+  const [searchAt, setSearchAt] = useState<string | null>(null);
   const [mobileShop, setMobileShop] = useState(false);
   const pathname = usePathname();
   const { count: cartCount } = useCart();
   const count = useHydrated() ? cartCount : 0;
   const onHome = pathname === "/";
   const shopOpen = shopAt === pathname;
+  const searchOpen = searchAt === pathname;
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -63,32 +66,37 @@ export function Header() {
   }, [pathname]);
 
   useEffect(() => {
-    if (!open && !shopOpen) return;
+    if (!open && !shopOpen && !searchOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
         setShopAt(null);
+        setSearchAt(null);
       }
     };
     const onPointer = (e: PointerEvent) => {
-      if (shopOpen && headerRef.current && !headerRef.current.contains(e.target as Node)) setShopAt(null);
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setShopAt(null);
+        setSearchAt(null);
+      }
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
-    if (open) document.body.style.overflow = "hidden";
+    if (open || searchOpen) document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("pointerdown", onPointer);
       document.body.style.overflow = "";
     };
-  }, [open, shopOpen]);
+  }, [open, shopOpen, searchOpen]);
 
   // Transparent over the home hero; after that the bar takes the tone of the section beneath it.
-  const light = onHome && !(solid || open || shopOpen);
-  const ink = !light && tone === "dark" && !open && !shopOpen;
+  const light = onHome && !(solid || open || shopOpen || searchOpen);
+  const ink = !light && tone === "dark" && !open && !shopOpen && !searchOpen;
   const closeAll = () => {
     setOpen(false);
     setShopAt(null);
+    setSearchAt(null);
   };
 
   return (
@@ -117,7 +125,10 @@ export function Header() {
               type="button"
               aria-expanded={shopOpen}
               aria-controls="shop-menu"
-              onClick={() => setShopAt(shopOpen ? null : pathname)}
+              onClick={() => {
+                setSearchAt(null);
+                setShopAt(shopOpen ? null : pathname);
+              }}
               className="flex items-center gap-2 opacity-90 transition-opacity hover:opacity-60"
             >
               Shop
@@ -139,6 +150,7 @@ export function Header() {
           aria-controls="mobile-menu"
           onClick={() => {
             setShopAt(null);
+            setSearchAt(null);
             setOpen((v) => !v);
           }}
         >
@@ -157,7 +169,30 @@ export function Header() {
           <span className="hidden text-[12px] font-semibold uppercase tracking-[0.3em] sm:inline">Alanyo Group</span>
         </Link>
 
-        <div className="flex items-center justify-end gap-6 text-[11px] font-medium uppercase tracking-[0.18em] sm:gap-9">
+        <div className="flex items-center justify-end gap-5 text-[11px] font-medium uppercase tracking-[0.18em] sm:gap-8">
+          <button
+            type="button"
+            aria-label={searchOpen ? "Close search" : "Search products"}
+            aria-expanded={searchOpen}
+            aria-controls="search-panel"
+            onClick={() => {
+              setOpen(false);
+              setShopAt(null);
+              setSearchAt(searchOpen ? null : pathname);
+            }}
+            className="-m-2 p-2 opacity-90 transition-opacity hover:opacity-60"
+          >
+            {searchOpen ? (
+              <svg aria-hidden viewBox="0 0 20 20" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.4">
+                <path d="m4.5 4.5 11 11m0-11-11 11" />
+              </svg>
+            ) : (
+              <svg aria-hidden viewBox="0 0 20 20" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.4">
+                <circle cx="8.6" cy="8.6" r="5.6" />
+                <path d="m13 13 4.5 4.5" />
+              </svg>
+            )}
+          </button>
           <Link href="/contact" className="hidden opacity-90 transition-opacity hover:opacity-60 sm:inline">
             Enquire
           </Link>
@@ -166,6 +201,8 @@ export function Header() {
           </Link>
         </div>
       </nav>
+
+      {searchOpen && <SearchPanel onNavigate={closeAll} />}
 
       {shopOpen && (
         <div id="shop-menu" className="hidden border-t border-stone xl:block">
