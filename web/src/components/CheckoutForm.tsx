@@ -241,7 +241,6 @@ export function CheckoutForm() {
               inputMode="tel"
               required
               maxLength={30}
-              hint={pickup ? "Our team may call you about your order." : "Our team calls to confirm your delivery."}
               value={fields.phone}
               onChange={(e) => set("phone", e.target.value)}
               error={errors.phone}
