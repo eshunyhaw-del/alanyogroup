@@ -5,7 +5,7 @@ import { categories } from "@/lib/catalog";
 const columns = [
   { title: "Collections", links: categories.map((c) => ({ label: c.name, href: `/collections/${c.slug}` })) },
   {
-    title: "Alanyo",
+    title: "Alanyo Group",
     links: [
       { label: "About", href: "/about" },
       { label: "Showrooms", href: "/showroom" },
