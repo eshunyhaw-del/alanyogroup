@@ -18,14 +18,20 @@ export default function CollectionsPage() {
         {categories.map((c) => (
           <li key={c.slug}>
             <Link href={`/collections/${c.slug}`} className="group block">
-              <div className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-stone">
+              <div
+                className={`relative grid aspect-[4/5] place-items-center overflow-hidden ${
+                  c.fit === "contain" ? "bg-white" : "bg-stone"
+                }`}
+              >
                 {c.image ? (
                   <Image
                     src={c.image}
                     alt={c.imageAlt ?? ""}
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-[1400ms] ease-quiet group-hover:scale-[1.04]"
+                    className={`transition-transform duration-[1400ms] ease-quiet group-hover:scale-[1.04] ${
+                      c.fit === "contain" ? "object-contain p-6" : "object-cover"
+                    }`}
                   />
                 ) : (
                   <span className="text-[10px] uppercase tracking-[0.2em] text-warm">Photography to come</span>

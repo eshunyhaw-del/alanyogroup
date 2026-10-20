@@ -12,6 +12,7 @@ type Tile = {
   alt?: string;
   span: string;
   aspect: string;
+  fit?: "cover" | "contain";
 };
 
 // Category names come from the business brief. No counts, prices or specifications are shown
@@ -68,6 +69,9 @@ const tiles: Tile[] = [
   {
     name: "Water Heaters",
     href: "/collections/water-heaters",
+    image: "/products/15l-electric-water-heater-with-elbc-protector-1.webp",
+    alt: "A white electric water heater with a digital temperature display",
+    fit: "contain",
     span: "md:col-span-4",
     aspect: "aspect-[4/3] md:aspect-auto md:min-h-[20rem] md:flex-1",
   },
@@ -136,7 +140,7 @@ export function Collections() {
               <Link href={t.href} className="group flex h-full flex-col">
                 <div
                   className={`relative w-full overflow-hidden ${t.aspect} ${
-                    t.image ? "bg-stone" : "grid place-items-center bg-stone"
+                    t.fit === "contain" ? "bg-white" : t.image ? "bg-stone" : "grid place-items-center bg-stone"
                   }`}
                 >
                   {t.image ? (
@@ -145,7 +149,9 @@ export function Collections() {
                       alt={t.alt ?? ""}
                       fill
                       sizes="(min-width: 768px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-[1400ms] ease-quiet group-hover:scale-[1.04]"
+                      className={`transition-transform duration-[1400ms] ease-quiet group-hover:scale-[1.04] ${
+                        t.fit === "contain" ? "object-contain p-6" : "object-cover"
+                      }`}
                     />
                   ) : (
                     <span className="px-6 text-center text-[10px] uppercase tracking-[0.2em] text-warm">
@@ -165,7 +171,7 @@ export function Collections() {
         </ul>
 
         <p className="mt-16 text-[10px] uppercase tracking-[0.18em] text-warm/80">
-          Atmosphere photography. Not product listings.
+          Photography is illustrative.
         </p>
       </div>
     </section>

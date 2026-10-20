@@ -4,6 +4,8 @@ export type Category = {
   blurb: string;
   image?: string;
   imageAlt?: string;
+  /** "contain" shows a product photograph whole on white; the default crops lifestyle photography to fill. */
+  fit?: "cover" | "contain";
 };
 
 // Category names come from the business brief. Descriptions stay general: no specifications,
@@ -55,5 +57,8 @@ export const categories: Category[] = [
     slug: "water-heaters",
     name: "Water Heaters",
     blurb: "Reliable hot water, quietly installed.",
+    image: "/products/15l-electric-water-heater-with-elbc-protector-1.webp",
+    imageAlt: "A white electric water heater with a digital temperature display",
+    fit: "contain",
   },
 ];
