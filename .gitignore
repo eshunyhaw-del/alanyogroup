@@ -11,3 +11,5 @@ Claude/
 Assets/img/
 Assets/font/*.zip
 Assets/font/
+db.sqlite3
+*.sqlite3

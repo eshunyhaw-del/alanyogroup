@@ -22,6 +22,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "web" / "src" / "data" / "catalog.json"
+# The API reads its own copy (it is deployed without the web folder) so the server owns prices.
+OUT_API = ROOT / "api" / "apps" / "catalog" / "data" / "catalog.json"
 REVIEW = ROOT / "tools" / "catalog-review.md"
 
 SEP = "–"  # the export separates product name from tagline with an en dash
@@ -180,7 +182,10 @@ def main(path: str):
         )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(products, indent=1, ensure_ascii=False), encoding="utf-8")
+    payload = json.dumps(products, indent=1, ensure_ascii=False)
+    OUT.write_text(payload, encoding="utf-8")
+    OUT_API.parent.mkdir(parents=True, exist_ok=True)
+    OUT_API.write_text(payload, encoding="utf-8")
 
     by_cat: dict[str, int] = {}
     for p in products:

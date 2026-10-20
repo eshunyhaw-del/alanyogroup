@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Suspense } from "react";
 import { CartProvider } from "@/lib/cart";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -32,9 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <style>{`.reveal{opacity:1!important}`}</style>
         </noscript>
         <CartProvider>
-          <Suspense fallback={null}>
-            <Header />
-          </Suspense>
+          <Header />
           {children}
           <Footer />
           <WhatsAppButton />
