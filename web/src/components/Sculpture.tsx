@@ -52,7 +52,7 @@ export function Sculpture() {
   }, []);
 
   return (
-    <section ref={root} className="bg-ink text-porcelain">
+    <section ref={root} data-tone="dark" className="bg-ink text-porcelain">
       <div className="mx-auto grid max-w-[1800px] items-center gap-12 px-5 py-24 sm:px-8 md:grid-cols-12 md:gap-8 lg:px-14 lg:py-40">
         <div data-copy className="md:order-2 md:col-span-5 md:col-start-8">
           <h2

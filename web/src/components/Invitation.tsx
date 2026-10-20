@@ -41,7 +41,7 @@ export function Invitation() {
   }, []);
 
   return (
-    <section ref={root} className="relative grid min-h-svh place-items-center overflow-hidden bg-ink text-white">
+    <section ref={root} data-tone="dark" className="relative grid min-h-svh place-items-center overflow-hidden bg-ink text-white">
       <div data-drift className="absolute inset-0 will-change-transform">
         <Image
           src="/images/invitation-garden.webp"

@@ -41,7 +41,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={root} className="relative h-svh min-h-[620px] overflow-hidden bg-ink text-white">
+    <section ref={root} data-tone="dark" className="relative h-svh min-h-[620px] overflow-hidden bg-ink text-white">
       <div data-media className="absolute inset-0 will-change-transform">
         <div ref={media} className="absolute inset-0 will-change-transform">
           <Image

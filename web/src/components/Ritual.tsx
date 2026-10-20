@@ -40,7 +40,7 @@ export function Ritual() {
   }, []);
 
   return (
-    <section ref={root} className="relative h-svh min-h-[620px] overflow-hidden bg-ink text-porcelain">
+    <section ref={root} data-tone="dark" className="relative h-svh min-h-[620px] overflow-hidden bg-ink text-porcelain">
       <div className="mx-auto grid h-full max-w-[1800px] grid-rows-[minmax(0,1fr)_auto] gap-8 px-5 pb-10 pt-24 sm:px-8 md:grid-cols-12 md:grid-rows-1 md:items-center md:gap-8 md:py-24 lg:px-14">
         <div className="relative min-h-0 md:order-2 md:col-span-5 md:col-start-7 md:h-full">
           <div data-frame className="relative mx-auto h-full max-h-full w-full overflow-hidden md:max-w-[34rem]">

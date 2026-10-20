@@ -68,7 +68,7 @@ export function Craftsmanship() {
         </div>
       </div>
 
-      <div data-wide className="relative mx-auto aspect-[4/3] w-full max-w-[1800px] overflow-hidden md:aspect-[21/10]">
+      <div data-wide data-tone="dark" className="relative mx-auto aspect-[4/3] w-full max-w-[1800px] overflow-hidden md:aspect-[21/10]">
         <div data-wide-drift className="absolute inset-0 will-change-transform">
           <Image
             src="/images/craft-vanity.webp"
