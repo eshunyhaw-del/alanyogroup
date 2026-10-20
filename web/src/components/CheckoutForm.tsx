@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { Field, Select, TextArea } from "@/components/Field";
+import { BoxField, BoxSelect, BoxTextArea } from "@/components/Field";
 import { ButtonLink } from "@/components/PageHeader";
-import { useCart } from "@/lib/cart";
+import { type CartLine, useCart } from "@/lib/cart";
 import { formatGHS } from "@/lib/catalog";
 import {
   GHANA_REGIONS,
@@ -13,6 +14,9 @@ import {
   startCheckout,
   validateFields,
 } from "@/lib/checkout";
+
+// From the Shipping Policy: orders of GHS 16,000 or more qualify for free delivery within Greater Accra.
+const FREE_DELIVERY_PESEWAS = 16000 * 100;
 
 const EMPTY: CheckoutFields = {
   name: "",
@@ -26,9 +30,66 @@ const EMPTY: CheckoutFields = {
   website: "",
 };
 
+function deliveryNote(region: string, subtotal: number): { label: string; detail: string } {
+  if (region === "Greater Accra" && subtotal >= FREE_DELIVERY_PESEWAS) {
+    return { label: "Free", detail: "Free delivery within Greater Accra on orders of GHS 16,000 or more." };
+  }
+  return {
+    label: region ? "Confirmed by our team" : "Enter your address",
+    detail: "A delivery fee applies to orders below GHS 16,000 or outside Greater Accra. Our team confirms it when they call.",
+  };
+}
+
+function OrderSummary({ lines, subtotal, region }: { lines: CartLine[]; subtotal: number; region: string }) {
+  const shipping = deliveryNote(region, subtotal);
+  return (
+    <div>
+      <ul className="space-y-5">
+        {lines.map((l) => (
+          <li key={l.slug} className="flex items-center gap-4">
+            <div className="relative h-16 w-16 shrink-0 border border-stone bg-white">
+              {l.image && <Image src={l.image} alt="" fill sizes="64px" className="object-contain p-1" />}
+              <span className="absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-ink px-1 text-[11px] text-porcelain">
+                {l.qty}
+              </span>
+            </div>
+            <p className="flex-1 text-[14px] font-light leading-snug">{l.name}</p>
+            <p className="shrink-0 text-[14px] font-light">{formatGHS(l.pricePesewas * l.qty)}</p>
+          </li>
+        ))}
+      </ul>
+
+      <dl className="mt-8 space-y-3 text-[14px] font-light">
+        <div className="flex justify-between">
+          <dt>Subtotal</dt>
+          <dd>{formatGHS(subtotal)}</dd>
+        </div>
+        <div className="flex justify-between gap-6">
+          <dt>Delivery</dt>
+          <dd className="text-right text-warm">{shipping.label}</dd>
+        </div>
+        <div className="flex items-baseline justify-between border-t border-stone pt-4 text-[17px]">
+          <dt>Total</dt>
+          <dd>
+            <span className="mr-2 text-[11px] text-warm">GHS</span>
+            {formatGHS(subtotal).replace(/^GH₵/, "")}
+          </dd>
+        </div>
+      </dl>
+      <p className="mt-4 text-[12px] leading-[1.7] text-warm">
+        <Link href="/cart" className="border-b border-ink/30 hover:border-ink">
+          Edit cart
+        </Link>
+        . The final amount is confirmed by our server when you pay.
+      </p>
+    </div>
+  );
+}
+
 export function CheckoutForm() {
   const { lines, subtotalPesewas } = useCart();
   const [fields, setFields] = useState<CheckoutFields>(EMPTY);
+  const [names, setNames] = useState({ first: "", last: "" });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [message, setMessage] = useState<string | null>(null);
   const [unavailable, setUnavailable] = useState<string[]>([]);
@@ -39,10 +100,13 @@ export function CheckoutForm() {
 
   if (lines.length === 0) {
     return (
-      <div className="max-w-xl border-t border-stone pt-10">
-        <p className="text-[15px] font-light leading-[1.8] text-ink/75">Your cart is empty.</p>
-        <div className="mt-8">
-          <ButtonLink href="/collections">Browse collections</ButtonLink>
+      <div className="mx-auto max-w-[1800px] px-5 pb-32 pt-16 sm:px-8 lg:px-14">
+        <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-light tracking-[-0.02em]">Checkout</h1>
+        <div className="mt-10 max-w-xl border-t border-stone pt-10">
+          <p className="text-[15px] font-light leading-[1.8] text-ink/75">Your cart is empty.</p>
+          <div className="mt-8">
+            <ButtonLink href="/collections">Browse collections</ButtonLink>
+          </div>
         </div>
       </div>
     );
@@ -53,6 +117,12 @@ export function CheckoutForm() {
     if (errors[name]) setErrors((e) => ({ ...e, [name]: undefined }));
   };
 
+  const setName = (part: "first" | "last", value: string) => {
+    const next = { ...names, [part]: value };
+    setNames(next);
+    set("name", `${next.first} ${next.last}`.trim());
+  };
+
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (busy) return;
@@ -60,10 +130,13 @@ export function CheckoutForm() {
     setUnavailable([]);
 
     const found = validateFields(fields);
+    if (!names.first.trim()) found.name = "Enter your first name.";
+    else if (!names.last.trim()) found.name = "Enter your last name.";
     if (Object.keys(found).length > 0) {
       setErrors(found);
       setMessage("Please check the highlighted details.");
-      document.getElementById(Object.keys(found)[0])?.focus();
+      const firstKey = Object.keys(found)[0];
+      document.getElementById(firstKey === "name" ? (names.first.trim() ? "last" : "first") : firstKey)?.focus();
       return;
     }
 
@@ -86,23 +159,35 @@ export function CheckoutForm() {
     setBusy(false);
   }
 
+  const shipping = deliveryNote(fields.region, subtotalPesewas);
+  const sectionTitle = "text-[17px] font-normal tracking-tight";
+
   return (
-    <form noValidate onSubmit={onSubmit} className="grid gap-12 md:grid-cols-12 md:gap-8">
-      <div className="space-y-10 md:col-span-7">
-        <fieldset className="space-y-8">
-          <legend className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Contact</legend>
-          <Field
-            label="Full name"
-            name="name"
-            autoComplete="name"
-            required
-            maxLength={120}
-            value={fields.name}
-            onChange={(e) => set("name", e.target.value)}
-            error={errors.name}
-          />
-          <div className="grid gap-8 sm:grid-cols-2">
-            <Field
+    <form noValidate onSubmit={onSubmit} className="min-h-[calc(100svh-5rem)] md:grid md:grid-cols-2">
+      {/* Phones: the order summary folds away at the top, as on most payment pages. */}
+      <details className="border-b border-stone bg-white px-5 py-4 md:hidden">
+        <summary className="flex cursor-pointer list-none items-center justify-between text-[14px]">
+          <span>Order summary</span>
+          <span>{formatGHS(subtotalPesewas)}</span>
+        </summary>
+        <div className="pt-6">
+          <OrderSummary lines={lines} subtotal={subtotalPesewas} region={fields.region} />
+        </div>
+      </details>
+
+      {/* Form */}
+      <div className="bg-porcelain px-5 pb-20 pt-10 sm:px-8 md:px-10 md:pt-14">
+        <div className="mx-auto max-w-[34rem] md:ml-auto md:mr-0 lg:mr-6">
+          <Link href="/cart" className="text-[12px] text-warm hover:text-ink">
+            ← Back to cart
+          </Link>
+          <h1 className="mt-4 text-[clamp(1.75rem,3vw,2.5rem)] font-light tracking-[-0.02em]">Checkout</h1>
+
+          <section className="mt-10 space-y-3" aria-labelledby="contact-title">
+            <h2 id="contact-title" className={sectionTitle}>
+              Contact
+            </h2>
+            <BoxField
               label="Email"
               name="email"
               type="email"
@@ -115,7 +200,7 @@ export function CheckoutForm() {
               onChange={(e) => set("email", e.target.value)}
               error={errors.email}
             />
-            <Field
+            <BoxField
               label="Phone"
               name="phone"
               type="tel"
@@ -123,134 +208,168 @@ export function CheckoutForm() {
               inputMode="tel"
               required
               maxLength={30}
-              hint="Our team calls to confirm delivery."
+              hint="Our team calls to confirm your delivery."
               value={fields.phone}
               onChange={(e) => set("phone", e.target.value)}
               error={errors.phone}
             />
-          </div>
-        </fieldset>
+          </section>
 
-        <fieldset className="space-y-8">
-          <legend className="mb-6 text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Delivery</legend>
-          <Field
-            label="Address"
-            name="address"
-            autoComplete="street-address"
-            required
-            maxLength={300}
-            value={fields.address}
-            onChange={(e) => set("address", e.target.value)}
-            error={errors.address}
-          />
-          <div className="grid gap-8 sm:grid-cols-2">
-            <Field
-              label="Town or city"
-              name="city"
-              autoComplete="address-level2"
+          <section className="mt-10 space-y-3" aria-labelledby="delivery-title">
+            <h2 id="delivery-title" className={sectionTitle}>
+              Delivery
+            </h2>
+            <div className={`border border-ink/25 bg-stone/40 px-3 pb-2 pt-2`}>
+              <span className="block text-[11px] text-warm">Country / region</span>
+              <span className="mt-0.5 block text-[15px] font-light">Ghana</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <BoxField
+                label="First name"
+                name="first"
+                autoComplete="given-name"
+                required
+                maxLength={60}
+                value={names.first}
+                onChange={(e) => setName("first", e.target.value)}
+                error={errors.name && !names.first.trim() ? errors.name : undefined}
+              />
+              <BoxField
+                label="Last name"
+                name="last"
+                autoComplete="family-name"
+                required
+                maxLength={60}
+                value={names.last}
+                onChange={(e) => setName("last", e.target.value)}
+                error={errors.name && names.first.trim() ? errors.name : undefined}
+              />
+            </div>
+            <BoxField
+              label="Address"
+              name="address"
+              autoComplete="street-address"
               required
-              maxLength={100}
-              value={fields.city}
-              onChange={(e) => set("city", e.target.value)}
-              error={errors.city}
+              maxLength={300}
+              value={fields.address}
+              onChange={(e) => set("address", e.target.value)}
+              error={errors.address}
             />
-            <Select
-              label="Region"
-              name="region"
-              autoComplete="address-level1"
-              required
-              options={GHANA_REGIONS}
-              value={fields.region}
-              onChange={(e) => set("region", e.target.value)}
-              error={errors.region}
+            <div className="grid grid-cols-2 gap-3">
+              <BoxField
+                label="Town or city"
+                name="city"
+                autoComplete="address-level2"
+                required
+                maxLength={100}
+                value={fields.city}
+                onChange={(e) => set("city", e.target.value)}
+                error={errors.city}
+              />
+              <BoxSelect
+                label="Region"
+                name="region"
+                autoComplete="address-level1"
+                required
+                options={GHANA_REGIONS}
+                value={fields.region}
+                onChange={(e) => set("region", e.target.value)}
+                error={errors.region}
+              />
+            </div>
+            <BoxTextArea
+              label="Delivery notes"
+              name="notes"
+              maxLength={500}
+              value={fields.notes}
+              onChange={(e) => set("notes", e.target.value)}
             />
-          </div>
-          <TextArea
-            label="Delivery notes"
-            name="notes"
-            maxLength={500}
-            value={fields.notes}
-            onChange={(e) => set("notes", e.target.value)}
-          />
-        </fieldset>
+          </section>
 
-        {/* Honeypot: invisible to people and to screen readers; bots tend to fill it in. */}
-        <div aria-hidden className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
-          <label>
-            Leave this field empty
-            <input
-              type="text"
-              name="website"
-              tabIndex={-1}
-              autoComplete="off"
-              value={fields.website}
-              onChange={(e) => set("website", e.target.value)}
-            />
-          </label>
-        </div>
-
-        <div>
-          <label className="flex cursor-pointer items-start gap-3 text-[14px] font-light leading-[1.7] text-ink/80">
-            <input
-              id="consent"
-              type="checkbox"
-              checked={fields.consent}
-              onChange={(e) => set("consent", e.target.checked)}
-              aria-invalid={errors.consent ? true : undefined}
-              aria-describedby={errors.consent ? "consent-error" : undefined}
-              className="mt-1.5 h-4 w-4 shrink-0 accent-ink"
-            />
-            <span>
-              I have read and accept the{" "}
-              <Link href="/privacy" target="_blank" className="border-b border-ink/40 hover:border-ink">
-                Privacy Policy
-              </Link>{" "}
-              and{" "}
-              <Link href="/delivery" target="_blank" className="border-b border-ink/40 hover:border-ink">
+          <section className="mt-10" aria-labelledby="shipping-title">
+            <h2 id="shipping-title" className={sectionTitle}>
+              Delivery method
+            </h2>
+            <div className="mt-3 border border-ink bg-white px-4 py-3">
+              <div className="flex items-baseline justify-between gap-4 text-[14px]">
+                <span>Standard delivery</span>
+                <span className="text-right">{shipping.label}</span>
+              </div>
+              <p className="mt-1 text-[12px] leading-[1.6] text-warm">{shipping.detail}</p>
+            </div>
+            <p className="mt-2 text-[12px] text-warm">
+              Read our{" "}
+              <Link href="/delivery" target="_blank" className="border-b border-ink/30 hover:border-ink">
                 Shipping Policy
               </Link>
-              , and agree to be contacted about this order.
-            </span>
-          </label>
-          {errors.consent && (
-            <p id="consent-error" role="alert" className="mt-2 text-[12px] text-ink">
-              {errors.consent}
+              .
             </p>
-          )}
-        </div>
-      </div>
+          </section>
 
-      <aside className="md:col-span-4 md:col-start-9">
-        <div className="bg-stone p-8">
-          <h2 className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Your order</h2>
-          <ul className="mt-6 space-y-3 text-[14px] font-light">
-            {lines.map((l) => (
-              <li key={l.slug} className="flex justify-between gap-4">
-                <span>
-                  {l.name} × {l.qty}
-                </span>
-                <span>{formatGHS(l.pricePesewas * l.qty)}</span>
-              </li>
-            ))}
-          </ul>
-          <dl className="mt-6 space-y-3 border-t border-ink/15 pt-6 text-[15px] font-light">
-            <div className="flex justify-between">
-              <dt>Subtotal</dt>
-              <dd>{formatGHS(subtotalPesewas)}</dd>
+          <section className="mt-10" aria-labelledby="payment-title">
+            <h2 id="payment-title" className={sectionTitle}>
+              Payment
+            </h2>
+            <p className="mt-1 text-[12px] text-warm">Payments are processed securely by Paystack.</p>
+            <div className="mt-3 border border-ink bg-white">
+              <div className="flex items-center justify-between px-4 py-3 text-[14px]">
+                <span>Paystack</span>
+                <span className="text-[12px] text-warm">Card · Mobile money · Bank transfer</span>
+              </div>
+              <p className="border-t border-stone bg-stone/40 px-4 py-4 text-center text-[13px] text-ink/80">
+                You will be redirected to Paystack to complete your purchase.
+              </p>
             </div>
-            <div className="flex justify-between text-warm">
-              <dt>Delivery</dt>
-              <dd>
-                <Link href="/delivery" className="border-b border-ink/30 hover:border-ink">
-                  See shipping policy
+          </section>
+
+          <div className="mt-8">
+            <label className="flex cursor-pointer items-start gap-3 text-[13px] font-light leading-[1.7] text-ink/80">
+              <input
+                id="consent"
+                type="checkbox"
+                checked={fields.consent}
+                onChange={(e) => set("consent", e.target.checked)}
+                aria-invalid={errors.consent ? true : undefined}
+                aria-describedby={errors.consent ? "consent-error" : undefined}
+                className="mt-1.5 h-4 w-4 shrink-0 accent-ink"
+              />
+              <span>
+                I have read and accept the{" "}
+                <Link href="/privacy" target="_blank" className="border-b border-ink/40 hover:border-ink">
+                  Privacy Policy
+                </Link>{" "}
+                and{" "}
+                <Link href="/delivery" target="_blank" className="border-b border-ink/40 hover:border-ink">
+                  Shipping Policy
                 </Link>
-              </dd>
-            </div>
-          </dl>
+                , and agree to be contacted about this order.
+              </span>
+            </label>
+            {errors.consent && (
+              <p id="consent-error" role="alert" className="mt-2 text-[12px] text-ink">
+                {errors.consent}
+              </p>
+            )}
+          </div>
+
+          {/* Honeypot: invisible to people and to screen readers; bots tend to fill it in. */}
+          <div aria-hidden className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+            <label>
+              Leave this field empty
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={fields.website}
+                onChange={(e) => set("website", e.target.value)}
+              />
+            </label>
+          </div>
 
           <div aria-live="polite">
             {message && (
-              <div role="alert" className="mt-6 border border-ink/40 p-4 text-[13px] leading-[1.6]">
+              <div role="alert" className="mt-6 border border-ink/40 bg-white p-4 text-[13px] leading-[1.6]">
                 <p>{message}</p>
                 {unavailable.length > 0 && (
                   <ul className="mt-2 list-disc pl-5">
@@ -266,14 +385,33 @@ export function CheckoutForm() {
           <button
             type="submit"
             disabled={busy}
-            className="mt-8 w-full border border-ink bg-ink px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-porcelain transition-colors duration-500 ease-quiet hover:bg-transparent hover:text-ink disabled:cursor-wait disabled:opacity-50"
+            className="mt-6 w-full border border-ink bg-ink px-8 py-5 text-[13px] font-medium tracking-[0.04em] text-porcelain transition-colors duration-500 ease-quiet hover:bg-transparent hover:text-ink disabled:cursor-wait disabled:opacity-50"
           >
-            {busy ? "Connecting to Paystack…" : `Pay ${formatGHS(subtotalPesewas)} with Paystack`}
+            {busy ? "Connecting to Paystack…" : `Pay now · ${formatGHS(subtotalPesewas)}`}
           </button>
-          <p className="mt-5 text-[12px] leading-[1.7] text-warm">
-            You will pay on Paystack&rsquo;s secure page. We never see or store your card or mobile money details. The
-            final amount is confirmed by our server, and your order is confirmed only after the payment is verified.
+          <p className="mt-4 text-center text-[12px] leading-[1.7] text-warm">
+            We never see or store your card or mobile money details. Your order is confirmed only after the payment is
+            verified.
           </p>
+
+          <nav aria-label="Policies" className="mt-10 flex gap-6 border-t border-stone pt-6 text-[12px]">
+            <Link href="/privacy" target="_blank" className="border-b border-ink/30 hover:border-ink">
+              Privacy
+            </Link>
+            <Link href="/delivery" target="_blank" className="border-b border-ink/30 hover:border-ink">
+              Shipping
+            </Link>
+            <Link href="/returns" target="_blank" className="border-b border-ink/30 hover:border-ink">
+              Returns
+            </Link>
+          </nav>
+        </div>
+      </div>
+
+      {/* Summary */}
+      <aside className="hidden border-l border-stone bg-white md:block" aria-label="Order summary">
+        <div className="sticky top-20 max-w-[28rem] px-10 py-14 lg:ml-6">
+          <OrderSummary lines={lines} subtotal={subtotalPesewas} region={fields.region} />
         </div>
       </aside>
     </form>

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { type Tone, toneAt } from "@/lib/tone";
 
@@ -10,6 +11,7 @@ const HREF = `https://wa.me/${NUMBER}?text=${encodeURIComponent(MESSAGE)}`;
 
 export function WhatsAppButton() {
   const ref = useRef<HTMLAnchorElement>(null);
+  const pathname = usePathname();
   // Phones: hidden until the visitor nears the footer, then it fades in quietly.
   const [nearFooter, setNearFooter] = useState(false);
   // The colour of whatever is behind the icon. Sections that are dark or photographic carry
@@ -36,6 +38,9 @@ export function WhatsAppButton() {
       window.removeEventListener("resize", update);
     };
   }, []);
+
+  // Never float over a payment form.
+  if (pathname === "/checkout") return null;
 
   return (
     <a
