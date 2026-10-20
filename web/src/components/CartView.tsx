@@ -25,8 +25,8 @@ export function CartView() {
       <ul className="divide-y divide-stone border-y border-stone md:col-span-8">
         {lines.map((l) => (
           <li key={l.slug} className="flex gap-5 py-6">
-            <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-stone">
-              {l.image && <Image src={l.image} alt="" fill sizes="96px" className="object-cover" />}
+            <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-white">
+              {l.image && <Image src={l.image} alt="" fill sizes="96px" className="object-contain p-1" />}
             </div>
             <div className="flex flex-1 flex-col justify-between">
               <div className="flex justify-between gap-4">

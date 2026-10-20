@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AddToCart } from "@/components/AddToCart";
+import { ProductGallery } from "@/components/ProductGallery";
 import { Price } from "@/components/Price";
 import { getCategory, getProduct, getProducts } from "@/lib/catalog";
 
@@ -37,20 +37,7 @@ async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">
   return (
     <main className="mx-auto grid max-w-[1800px] gap-12 px-5 pb-32 pt-32 sm:px-8 md:grid-cols-12 md:gap-8 lg:px-14 lg:pt-40">
       <div className="md:col-span-7">
-        <div className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-stone md:aspect-[5/6]">
-          {product.image ? (
-            <Image
-              src={product.image}
-              alt={product.imageAlt ?? product.name}
-              fill
-              priority
-              sizes="(min-width: 768px) 58vw, 100vw"
-              className="object-cover"
-            />
-          ) : (
-            <span className="text-[10px] uppercase tracking-[0.2em] text-warm">Photography to come</span>
-          )}
-        </div>
+        <ProductGallery product={product} />
       </div>
 
       <div className="md:col-span-4 md:col-start-9 md:pt-8">

@@ -1,4 +1,5 @@
 import catalogData from "@/data/catalog.json";
+import productImages from "@/data/product-images.json";
 
 export type Category = {
   slug: string;
@@ -75,14 +76,20 @@ export type Product = {
   features: string[];
   specs: { name: string; value: string }[];
   description: string[];
-  /** Photographs have not been supplied yet. Products render a placeholder until they are. */
+  /** Product photographs in display order; the first is the main image. Empty means none supplied. */
+  images: { src: string; width: number; height: number }[];
+  /** Main image, for cards and the cart. */
   image?: string;
   imageAlt?: string;
 };
 
 // Interim source: data/catalog.json is generated from the WooCommerce export by
 // tools/import_woocommerce.py. It is replaced by the Django catalogue API later.
-const products = catalogData as unknown as Product[];
+const imageMap = productImages as unknown as Record<string, Product["images"]>;
+const products: Product[] = (catalogData as unknown as Omit<Product, "images" | "image" | "imageAlt">[]).map((p) => {
+  const images = imageMap[String(p.id)] ?? [];
+  return { ...p, images, image: images[0]?.src, imageAlt: p.name };
+});
 
 export function getProducts(): Product[] {
   return products;

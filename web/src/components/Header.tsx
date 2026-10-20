@@ -57,7 +57,7 @@ export function Header() {
         aria-label="Primary"
         className="mx-auto grid h-20 max-w-[1800px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 lg:px-14"
       >
-        <ul className="hidden gap-9 text-[11px] font-medium uppercase tracking-[0.18em] lg:flex">
+        <ul className="hidden gap-9 text-[11px] font-medium uppercase tracking-[0.18em] xl:flex">
           {primary.map((l) => (
             <li key={l.label}>
               <Link href={l.href} className="opacity-90 transition-opacity hover:opacity-60">
@@ -68,7 +68,7 @@ export function Header() {
         </ul>
         <button
           type="button"
-          className="justify-self-start text-[11px] font-medium uppercase tracking-[0.18em] lg:hidden"
+          className="justify-self-start text-[11px] font-medium uppercase tracking-[0.18em] xl:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpen((v) => !v)}
@@ -105,7 +105,7 @@ export function Header() {
       {open && (
         <div
           id="mobile-menu"
-          className="border-t border-stone bg-porcelain px-5 pb-10 pt-8 sm:px-8 lg:hidden"
+          className="border-t border-stone bg-porcelain px-5 pb-10 pt-8 sm:px-8 xl:hidden"
         >
           <ul className="flex flex-col gap-6 text-2xl font-light tracking-tight">
             {primary.map((l) => (

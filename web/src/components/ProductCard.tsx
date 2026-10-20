@@ -6,14 +6,14 @@ import type { Product } from "@/lib/catalog";
 export function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/products/${product.slug}`} className="group block">
-      <div className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-stone">
+      <div className="relative grid aspect-[4/5] place-items-center overflow-hidden bg-white">
         {product.image ? (
           <Image
             src={product.image}
             alt={product.imageAlt ?? product.name}
             fill
             sizes="(min-width: 768px) 33vw, 100vw"
-            className="object-cover transition-transform duration-[1400ms] ease-quiet group-hover:scale-[1.04]"
+            className="object-contain p-4 transition-transform duration-[1400ms] ease-quiet group-hover:scale-[1.04]"
           />
         ) : (
           <span className="px-6 text-center text-[10px] uppercase tracking-[0.2em] text-warm">
