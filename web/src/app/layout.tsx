@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { CartProvider } from "@/lib/cart";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import "./globals.css";
 
 const manrope = localFont({
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </Suspense>
           {children}
           <Footer />
+          <WhatsAppButton />
         </CartProvider>
       </body>
     </html>
