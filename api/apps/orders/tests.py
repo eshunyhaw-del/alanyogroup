@@ -428,3 +428,63 @@ class PickupAdminTests(TestCase):
         typed = f"{order.code[:3]} {order.code[3:]}".lower()
         response = self.client.get("/admin/orders/order/", {"q": typed})
         self.assertContains(response, order.customer_name)
+
+
+SHOWROOM_MAIL = {"weija": "weija@alanyogroup.com", "east-legon": "eastlegon@alanyogroup.com"}
+
+
+@override_settings(
+    PAYSTACK_SECRET_KEY=SECRET,
+    ORDER_NOTIFY_EMAILS=["sales@alanyogroup.com"],
+    SHOWROOM_EMAILS=SHOWROOM_MAIL,
+)
+class StaffRoutingTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.api = APIClient()
+        Product.objects.create(
+            external_id=1, slug="vanity-set", name="Vanity Set", sku="YN-1", category_slug="vanity-cabinets",
+            price_pesewas=550000, in_stock=True,
+        )
+
+    def paid_order(self, **overrides):
+        body = {
+            "items": [{"slug": "vanity-set", "quantity": 1}],
+            "name": "Ama Mensah", "email": "ama@example.com", "phone": "053 197 8362",
+            "fulfilment": "pickup", "pickup_showroom": "weija", "consent": True,
+        }
+        body.update(overrides)
+        with mock.patch.object(
+            paystack, "initialize_transaction", return_value={"authorization_url": "https://checkout.paystack.com/x"}
+        ):
+            order = Order.objects.get(reference=self.api.post("/api/v1/checkout", body, format="json").data["reference"])
+        with mock.patch.object(paystack, "verify_transaction", return_value=paystack_data(order)):
+            with self.captureOnCommitCallbacks(execute=True):
+                self.api.post(f"/api/v1/orders/{order.reference}/verify")
+        return order
+
+    def staff_mail(self):
+        return mail.outbox[1]  # [0] is the customer's receipt
+
+    def test_east_legon_pickup_goes_to_east_legon_and_sales(self):
+        self.paid_order(pickup_showroom="east-legon")
+        self.assertEqual(sorted(self.staff_mail().to), ["eastlegon@alanyogroup.com", "sales@alanyogroup.com"])
+
+    def test_weija_pickup_goes_to_weija_and_sales_only(self):
+        self.paid_order(pickup_showroom="weija")
+        to = self.staff_mail().to
+        self.assertEqual(sorted(to), ["sales@alanyogroup.com", "weija@alanyogroup.com"])
+        self.assertNotIn("eastlegon@alanyogroup.com", to)  # the other showroom is not copied
+
+    def test_delivery_orders_go_to_sales_only(self):
+        self.paid_order(fulfilment="delivery", pickup_showroom="", address="12 Palm Street", city="Accra", region="Greater Accra")
+        self.assertEqual(self.staff_mail().to, ["sales@alanyogroup.com"])
+
+    @override_settings(ORDER_NOTIFY_EMAILS=["weija@alanyogroup.com"])
+    def test_a_recipient_listed_twice_is_emailed_once(self):
+        self.paid_order(pickup_showroom="weija")
+        self.assertEqual(self.staff_mail().to, ["weija@alanyogroup.com"])
+
+    def test_the_customer_receipt_never_goes_to_staff_addresses(self):
+        self.paid_order(pickup_showroom="east-legon")
+        self.assertEqual(mail.outbox[0].to, ["ama@example.com"])

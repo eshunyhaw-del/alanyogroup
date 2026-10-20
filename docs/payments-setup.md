@@ -23,7 +23,11 @@ How checkout works, what is protected, and the steps to switch it on.
   in the receipt email.
   * Pickup: the customer shows the code and a valid ID at the showroom.
   * Delivery: the customer sends the code to the company WhatsApp number (053 197 8362).
-* Staff alert emails are tagged `[PICKUP]` or `[DELIVERY]` and name the showroom. Set `ORDER_NOTIFY_EMAILS`.
+* Staff alert emails are tagged `[PICKUP]` or `[DELIVERY]` and name the showroom.
+  * A paid **pickup** order is emailed to the showroom the customer chose (`weija@alanyogroup.com` or
+    `eastlegon@alanyogroup.com`), with `ORDER_NOTIFY_EMAILS` (sales@alanyogroup.com) copied. The other showroom is not told.
+  * A paid **delivery** order goes to `ORDER_NOTIFY_EMAILS` only.
+  * The showroom addresses are the defaults. To change them, set `SHOWROOM_EMAIL_WEIJA` and `SHOWROOM_EMAIL_EAST_LEGON`.
 * In the admin (`/admin/` > Orders): search by code (spaces and capitals do not matter), filter by fulfilment and
   showroom, and use the action **Mark selected paid pickup orders as collected**. A code can only be collected once.
 * SMS is not built yet. When the owner agrees to register the sender ID "Alanyo Group", the code and order details can be

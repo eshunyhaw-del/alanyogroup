@@ -61,6 +61,17 @@ def staff_destination(order: Order) -> str:
     return f"DELIVERY to {order.address}, {order.city}, {order.region}"
 
 
+def staff_recipients(order: Order) -> list[str]:
+    """Who is told about a paid order: the chosen showroom for pickup, plus the sales inbox. No duplicates."""
+    recipients: list[str] = []
+    if order.fulfilment == Order.Fulfilment.PICKUP:
+        showroom_email = settings.SHOWROOM_EMAILS.get(order.pickup_showroom)
+        if showroom_email:
+            recipients.append(showroom_email)
+    recipients.extend(settings.ORDER_NOTIFY_EMAILS)
+    return list(dict.fromkeys(e for e in recipients if e))
+
+
 @shared_task
 def notify_order_paid(order_id: int) -> None:
     """Email the customer a receipt and tell staff a paid order is waiting. Sends at most once per order."""
@@ -90,8 +101,9 @@ def notify_order_paid(order_id: int) -> None:
     tag = "PICKUP" if order.fulfilment == Order.Fulfilment.PICKUP else "DELIVERY"
     try:
         send_mail(f"Your Alanyo Group order {order.reference}", customer_body, None, [order.email])
-        if settings.ORDER_NOTIFY_EMAILS:
-            send_mail(f"[{tag}] New paid order {spaced(order.code)}", staff_body, None, settings.ORDER_NOTIFY_EMAILS)
+        recipients = staff_recipients(order)
+        if recipients:
+            send_mail(f"[{tag}] New paid order {spaced(order.code)}", staff_body, None, recipients)
     except Exception:
         # Roll the flag back so a later retry can send it; the payment itself is already safely recorded.
         Order.objects.filter(pk=order_id).update(notified_at=None)

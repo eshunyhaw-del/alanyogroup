@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, []),
-    ORDER_NOTIFY_EMAILS=(list, []),
+    ORDER_NOTIFY_EMAILS=(list, ["sales@alanyogroup.com"]),
 )
 environ.Env.read_env(BASE_DIR / ".env")
 
@@ -33,6 +33,12 @@ PAYSTACK_CURRENCY = "GHS"
 PAYSTACK_WEBHOOK_IPS = [ip.strip() for ip in env.list("PAYSTACK_WEBHOOK_IPS", default=[]) if ip.strip()]
 
 ORDER_NOTIFY_EMAILS = [e.strip() for e in env("ORDER_NOTIFY_EMAILS") if e.strip()]
+# Each showroom's own inbox. A paid pickup order is emailed to the showroom the customer chose, with
+# ORDER_NOTIFY_EMAILS (sales) copied. Delivery orders go to ORDER_NOTIFY_EMAILS only.
+SHOWROOM_EMAILS = {
+    "weija": env("SHOWROOM_EMAIL_WEIJA", default="weija@alanyogroup.com"),
+    "east-legon": env("SHOWROOM_EMAIL_EAST_LEGON", default="eastlegon@alanyogroup.com"),
+}
 # Where website enquiries are sent.
 ENQUIRY_EMAILS = [e.strip() for e in env.list("ENQUIRY_EMAILS", default=["sales@alanyogroup.com"]) if e.strip()]
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Alanyo Group <sales@alanyogroup.com>")
