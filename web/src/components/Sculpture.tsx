@@ -91,9 +91,6 @@ export function Sculpture() {
               />
             </div>
           </div>
-          <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-porcelain/45">
-            Atmosphere photography. Not a product listing.
-          </p>
         </div>
       </div>
     </section>

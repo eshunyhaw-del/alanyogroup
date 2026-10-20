@@ -19,9 +19,6 @@ export default function Page() {
               className="object-cover"
             />
           </div>
-          <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-warm">
-            Atmosphere photography. Not a product listing.
-          </p>
         </div>
         <div className="space-y-6 md:col-span-4 md:col-start-9 md:pt-8">
             <p className="text-[15px] font-light leading-[1.8] text-ink/75">We believe a bathroom or kitchen should feel composed, calm and considered, closer to a well-made room in a fine home than to a catalogue page.</p>

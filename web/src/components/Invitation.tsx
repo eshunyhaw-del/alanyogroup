@@ -82,9 +82,6 @@ export function Invitation() {
             Explore collections
           </Link>
         </div>
-        <p className="mt-16 text-[10px] uppercase tracking-[0.18em] text-white/50">
-          Atmosphere photography. Not a product listing.
-        </p>
       </div>
     </section>
   );

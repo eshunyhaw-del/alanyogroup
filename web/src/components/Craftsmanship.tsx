@@ -128,9 +128,6 @@ export function Craftsmanship() {
             <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-warm">Light across form</p>
           </div>
         </div>
-        <p className="mt-16 text-[10px] uppercase tracking-[0.18em] text-warm/80">
-          Atmosphere photography. Not product listings.
-        </p>
       </div>
     </section>
   );

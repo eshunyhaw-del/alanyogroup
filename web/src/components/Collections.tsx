@@ -170,9 +170,6 @@ export function Collections() {
           ))}
         </ul>
 
-        <p className="mt-16 text-[10px] uppercase tracking-[0.18em] text-warm/80">
-          Photography is illustrative.
-        </p>
       </div>
     </section>
   );
