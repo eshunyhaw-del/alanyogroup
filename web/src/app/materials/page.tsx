@@ -10,7 +10,7 @@ export default function Page() {
       <PageHeader kicker="Materials" title="Timber, stone and light." intro="How a piece is made matters as much as how it looks." />
       <div className="mx-auto grid max-w-[1800px] gap-12 px-5 pb-32 sm:px-8 md:grid-cols-12 md:gap-8 lg:px-14">
         <div className="md:col-span-7">
-          <div className="relative aspect-[4/3] overflow-hidden bg-stone">
+          <div data-tone="dark" className="relative aspect-[4/3] overflow-hidden bg-stone">
             <Image
               src="/images/craft-detail.webp"
               alt="A stone basin top and timber drawer front under soft wall lighting"

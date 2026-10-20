@@ -6,6 +6,8 @@ export type Category = {
   imageAlt?: string;
   /** "contain" shows a product photograph whole on white; the default crops lifestyle photography to fill. */
   fit?: "cover" | "contain";
+  /** "dark" for photographs dark enough that the header and WhatsApp icon should switch to light. */
+  tone?: "dark";
 };
 
 // Category names come from the business brief. Descriptions stay general: no specifications,
@@ -38,6 +40,7 @@ export const categories: Category[] = [
     blurb: "Showers and shower systems designed as part of the room.",
     image: "/images/col-showers.webp",
     imageAlt: "A rainfall shower head releasing water against a dark wall",
+    tone: "dark",
   },
   {
     slug: "wash-basins",
@@ -45,6 +48,7 @@ export const categories: Category[] = [
     blurb: "Basins that hold their shape and their light.",
     image: "/images/col-basins.webp",
     imageAlt: "Raking light across the curve of a basin in a warm room",
+    tone: "dark",
   },
   {
     slug: "kitchen",

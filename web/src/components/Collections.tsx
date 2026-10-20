@@ -13,6 +13,7 @@ type Tile = {
   span: string;
   aspect: string;
   fit?: "cover" | "contain";
+  tone?: "dark";
 };
 
 // Category names come from the business brief. No counts, prices or specifications are shown
@@ -44,6 +45,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Rainfall Showers",
+    tone: "dark",
     href: "/collections/rainfall-showers",
     image: "/images/col-showers.webp",
     alt: "A rainfall shower head releasing water against a dark wall",
@@ -52,6 +54,7 @@ const tiles: Tile[] = [
   },
   {
     name: "Wash Basins",
+    tone: "dark",
     href: "/collections/wash-basins",
     image: "/images/col-basins.webp",
     alt: "Raking light across the curve of a basin in a warm room",
@@ -139,6 +142,7 @@ export function Collections() {
             <li key={t.name} data-tile className={`${t.span} flex flex-col`}>
               <Link href={t.href} className="group flex h-full flex-col">
                 <div
+                  data-tone={t.tone}
                   className={`relative w-full overflow-hidden ${t.aspect} ${
                     t.fit === "contain" ? "bg-white" : t.image ? "bg-stone" : "grid place-items-center bg-stone"
                   }`}

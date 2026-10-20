@@ -15,7 +15,7 @@ export default function ShowroomPage() {
       />
 
       <div className="mx-auto max-w-[1800px] px-5 pb-32 sm:px-8 lg:px-14">
-        <div className="relative mb-16 aspect-[16/9] overflow-hidden bg-stone md:aspect-[21/9]">
+        <div data-tone="dark" className="relative mb-16 aspect-[16/9] overflow-hidden bg-stone md:aspect-[21/9]">
           <Image
             src="/images/craft-vanity.webp"
             alt="A floating timber double vanity with a stone top, set against travertine-clad walls"

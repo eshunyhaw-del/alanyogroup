@@ -19,6 +19,7 @@ export default function CollectionsPage() {
           <li key={c.slug}>
             <Link href={`/collections/${c.slug}`} className="group block">
               <div
+                data-tone={c.tone}
                 className={`relative grid aspect-[4/5] place-items-center overflow-hidden ${
                   c.fit === "contain" ? "bg-white" : "bg-stone"
                 }`}
