@@ -39,8 +39,8 @@ export function WhatsAppButton() {
     };
   }, []);
 
-  // Never float over a payment form.
-  if (pathname === "/checkout") return null;
+  // Never float over the payment form or the order instructions.
+  if (pathname === "/checkout" || pathname.startsWith("/order")) return null;
 
   return (
     <a

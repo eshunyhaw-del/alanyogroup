@@ -2,6 +2,8 @@ import re
 
 from rest_framework import serializers
 
+from .models import Order
+
 # Every control character except tab, newline and carriage return, which whitespace handling covers.
 CONTROL_CHARS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 E164 = re.compile(r"^\+[1-9]\d{7,14}$")
@@ -37,9 +39,12 @@ class CheckoutSerializer(serializers.Serializer):
     name = serializers.CharField(min_length=2, max_length=120)
     email = serializers.EmailField(max_length=254)
     phone = serializers.CharField(max_length=30)
-    address = serializers.CharField(min_length=5, max_length=300)
-    city = serializers.CharField(min_length=2, max_length=100)
-    region = serializers.CharField(min_length=2, max_length=100)
+    fulfilment = serializers.ChoiceField(choices=Order.Fulfilment.choices, default=Order.Fulfilment.DELIVERY)
+    pickup_showroom = serializers.ChoiceField(choices=Order.Showroom.choices, required=False, allow_blank=True, default="")
+    # Required for delivery, ignored for showroom pickup (checked in validate()).
+    address = serializers.CharField(max_length=300, required=False, allow_blank=True, default="")
+    city = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    region = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
     notes = serializers.CharField(max_length=500, allow_blank=True, required=False, default="")
     consent = serializers.BooleanField()
     # Honeypot: hidden from people, filled in by simple bots.
@@ -55,13 +60,13 @@ class CheckoutSerializer(serializers.Serializer):
         return normalise_phone(value)
 
     def validate_address(self, value):
-        return clean_text(value)
+        return clean_text(value) if value else ""
 
     def validate_city(self, value):
-        return clean_text(value)
+        return clean_text(value) if value else ""
 
     def validate_region(self, value):
-        return clean_text(value)
+        return clean_text(value) if value else ""
 
     def validate_notes(self, value):
         return clean_text(value) if value else ""
@@ -75,6 +80,26 @@ class CheckoutSerializer(serializers.Serializer):
         if value:
             raise serializers.ValidationError("Rejected.")
         return value
+
+    def validate(self, data):
+        errors = {}
+        if data["fulfilment"] == Order.Fulfilment.PICKUP:
+            if not data["pickup_showroom"]:
+                errors["pickup_showroom"] = "Choose which showroom you will collect from."
+            # A pickup order carries no delivery address.
+            data["address"] = data["city"] = data["region"] = ""
+        else:
+            data["pickup_showroom"] = ""
+            for field, minimum, message in (
+                ("address", 5, "Enter your delivery address."),
+                ("city", 2, "Enter your town or city."),
+                ("region", 2, "Choose your region."),
+            ):
+                if len(data[field]) < minimum:
+                    errors[field] = message
+        if errors:
+            raise serializers.ValidationError({k: [v] for k, v in errors.items()})
+        return data
 
     def validate_items(self, value):
         merged: dict[str, int] = {}

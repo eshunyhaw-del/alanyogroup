@@ -33,7 +33,23 @@ export default function ShippingPolicyPage() {
           </ul>
         </Section>
 
-        <Section title="3. Processing and delivery times">
+        <Section title="3. Showroom pickup">
+          <p>
+            You may pay online and collect your order from either of our showrooms, in Weija or East Legon. You choose
+            the showroom when you place your order.
+          </p>
+          <ul>
+            <li>Pickup is free.</li>
+            <li>Your order is available for collection once your payment is confirmed.</li>
+            <li>
+              After you pay, you receive a collection code on screen and by email. Please bring this code and a valid
+              form of ID when you collect your order.
+            </li>
+            <li>Showroom opening hours are Monday to Saturday, 8:00 AM to 5:00 PM.</li>
+          </ul>
+        </Section>
+
+        <Section title="4. Processing and delivery times">
           <p>
             Orders within Accra are normally processed and delivered within 24 to 48 hours of being placed. Processing
             takes place on the first day, and delivery on the second.
@@ -44,18 +60,18 @@ export default function ShippingPolicyPage() {
           </p>
         </Section>
 
-        <Section title="4. Delivery charges">
+        <Section title="5. Delivery charges">
           <p>
             Our delivery charges draw on more than 23 years of delivery experience in Accra. They are set to be fair,
             reasonable and transparent.
           </p>
         </Section>
 
-        <Section title="5. Delivery locations">
+        <Section title="6. Delivery locations">
           <p>We deliver within Accra and to locations outside Accra.</p>
         </Section>
 
-        <Section title="6. Order confirmation and delivery">
+        <Section title="7. Order confirmation and delivery">
           <p>After you place an order, our customer support team will call you to:</p>
           <ul>
             <li>confirm your exact delivery address; and</li>
@@ -65,16 +81,20 @@ export default function ShippingPolicyPage() {
             On arrival, the delivery driver will ask for your name and order number. This allows us to confirm that
             your order is handed to the right customer.
           </p>
+          <p>
+            After you pay, you receive an order code. Please send this code on WhatsApp to +233 531 978 362 so that we
+            can match your order quickly.
+          </p>
         </Section>
 
-        <Section title="7. Lost or damaged items">
+        <Section title="8. Lost or damaged items">
           <p>
             If an item is lost or damaged during delivery, please contact us immediately. We will investigate and take
             appropriate action, which may include a replacement or, where applicable, a refund.
           </p>
         </Section>
 
-        <Section title="8. Returns and exchanges">
+        <Section title="9. Returns and exchanges">
           <p>
             Please see our{" "}
             <Link href="/returns" className="border-b border-ink/40 hover:border-ink">
@@ -84,7 +104,7 @@ export default function ShippingPolicyPage() {
           </p>
         </Section>
 
-        <Section title="9. Customer support">
+        <Section title="10. Customer support">
           <p>Our support team is happy to answer any questions about your delivery.</p>
           <p>
             Phone:{" "}
@@ -96,7 +116,7 @@ export default function ShippingPolicyPage() {
           </p>
         </Section>
 
-        <Section title="10. Changes to this policy">
+        <Section title="11. Changes to this policy">
           <p>
             We may update this policy from time to time to improve our service. Any changes will be communicated
             through our website or by email.

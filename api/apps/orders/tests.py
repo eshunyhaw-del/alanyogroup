@@ -283,3 +283,148 @@ class CheckoutTests(TestCase):
         self.assertEqual(self.api.get("/api/v1/paystack/webhook").status_code, 405)
         self.assertEqual(self.api.get(f"/api/v1/orders/{order.reference}/verify").status_code, 405)
         self.assertEqual(self.api.get("/api/v1/checkout").status_code, 405)
+
+
+@override_settings(PAYSTACK_SECRET_KEY=SECRET, ORDER_NOTIFY_EMAILS=["staff@example.com"])
+class PickupTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.api = APIClient()
+        Product.objects.create(
+            external_id=1, slug="vanity-set", name="Vanity Set", sku="YN-1", category_slug="vanity-cabinets",
+            price_pesewas=550000, in_stock=True,
+        )
+
+    def body(self, **overrides):
+        data = {
+            "items": [{"slug": "vanity-set", "quantity": 1}],
+            "name": "Ama Mensah",
+            "email": "ama@example.com",
+            "phone": "053 197 8362",
+            "fulfilment": "pickup",
+            "pickup_showroom": "weija",
+            "consent": True,
+        }
+        data.update(overrides)
+        return data
+
+    def checkout(self, **overrides):
+        with mock.patch.object(
+            paystack, "initialize_transaction",
+            return_value={"authorization_url": "https://checkout.paystack.com/abc123"},
+        ):
+            return self.api.post("/api/v1/checkout", self.body(**overrides), format="json")
+
+    def pay(self, order):
+        with mock.patch.object(paystack, "verify_transaction", return_value=paystack_data(order)):
+            with self.captureOnCommitCallbacks(execute=True):
+                self.api.post(f"/api/v1/orders/{order.reference}/verify")
+
+    def test_pickup_needs_no_address_and_records_the_showroom(self):
+        response = self.checkout()
+        self.assertEqual(response.status_code, 201)
+        order = Order.objects.get(reference=response.data["reference"])
+        self.assertEqual(order.fulfilment, "pickup")
+        self.assertEqual(order.pickup_showroom, "weija")
+        self.assertEqual((order.address, order.city, order.region), ("", "", ""))
+        self.assertEqual(order.total_pesewas, 550000)  # pickup is free: nothing added
+
+    def test_pickup_must_name_a_valid_showroom(self):
+        for room in ("", "kumasi"):
+            cache.clear()
+            self.assertEqual(self.checkout(pickup_showroom=room).status_code, 400, room)
+        self.assertEqual(Order.objects.count(), 0)
+
+    def test_delivery_still_requires_an_address(self):
+        response = self.checkout(fulfilment="delivery", pickup_showroom="")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("address", response.data)
+        ok = self.checkout(
+            fulfilment="delivery", pickup_showroom="weija", address="12 Palm Street", city="Accra", region="Greater Accra"
+        )
+        cache.clear()
+        order = Order.objects.get()
+        self.assertEqual((ok.status_code, order.pickup_showroom), (201, ""))  # showroom ignored for delivery
+
+    def test_pickup_ignores_any_address_sent(self):
+        response = self.checkout(address="Somewhere", city="Accra", region="Greater Accra")
+        order = Order.objects.get(reference=response.data["reference"])
+        self.assertEqual(order.address, "")
+
+    def test_every_order_gets_a_short_unique_code_in_a_readable_alphabet(self):
+        codes = set()
+        for _ in range(6):
+            cache.clear()
+            response = self.checkout()
+            codes.add(Order.objects.get(reference=response.data["reference"]).code)
+        self.assertEqual(len(codes), 6)
+        for code in codes:
+            self.assertRegex(code, r"^[2-9A-HJ-NP-Z]{6}$")  # no 0, 1, I or O
+
+    def test_status_exposes_code_and_showroom_but_no_personal_data(self):
+        order = Order.objects.get(reference=self.checkout().data["reference"])
+        data = self.api.get(f"/api/v1/orders/{order.reference}").data
+        self.assertEqual((data["code"], data["fulfilment"], data["pickup_showroom"]), (order.code, "pickup", "weija"))
+        text = json.dumps(data)
+        for private in ("Ama", "example.com", "0531978362"):
+            self.assertNotIn(private, text)
+
+    def test_paid_pickup_emails_tell_customer_and_showroom_what_to_do(self):
+        order = Order.objects.get(reference=self.checkout(pickup_showroom="east-legon").data["reference"])
+        self.pay(order)
+        customer, staff = mail.outbox
+        spaced = f"{order.code[:3]} {order.code[3:]}"
+        self.assertIn(spaced, customer.body)
+        self.assertIn("East Legon", customer.body)
+        self.assertIn("ID", customer.body)
+        self.assertIn("free", customer.body.lower())
+        self.assertTrue(staff.subject.startswith("[PICKUP]"))
+        self.assertIn("East Legon", staff.body)
+
+    def test_paid_delivery_email_asks_for_the_code_on_whatsapp(self):
+        response = self.checkout(
+            fulfilment="delivery", pickup_showroom="", address="12 Palm Street", city="Accra", region="Greater Accra"
+        )
+        order = Order.objects.get(reference=response.data["reference"])
+        self.pay(order)
+        customer, staff = mail.outbox
+        self.assertIn("WhatsApp", customer.body)
+        self.assertIn(f"{order.code[:3]} {order.code[3:]}", customer.body)
+        self.assertTrue(staff.subject.startswith("[DELIVERY]"))
+
+
+class PickupAdminTests(TestCase):
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+
+        get_user_model().objects.create_superuser("staff", "staff@example.com", "a-long-test-password-123")
+        self.client.login(username="staff", password="a-long-test-password-123")
+
+    def make(self, status, fulfilment):
+        return Order.objects.create(
+            status=status, fulfilment=fulfilment, pickup_showroom="weija" if fulfilment == "pickup" else "",
+            customer_name="Ama", email="a@example.com", phone="+233531978362",
+            subtotal_pesewas=100, total_pesewas=100, consented_at="2026-10-20T10:00:00Z",
+        )
+
+    def test_only_paid_pickup_orders_can_be_marked_collected_and_only_once(self):
+        paid_pickup = self.make("paid", "pickup")
+        unpaid_pickup = self.make("pending", "pickup")
+        paid_delivery = self.make("paid", "delivery")
+        ids = [paid_pickup.pk, unpaid_pickup.pk, paid_delivery.pk]
+        self.client.post("/admin/orders/order/", {"action": "mark_collected", "_selected_action": ids})
+        for o in (paid_pickup, unpaid_pickup, paid_delivery):
+            o.refresh_from_db()
+        self.assertIsNotNone(paid_pickup.collected_at)
+        self.assertIsNone(unpaid_pickup.collected_at)
+        self.assertIsNone(paid_delivery.collected_at)
+        first = paid_pickup.collected_at
+        self.client.post("/admin/orders/order/", {"action": "mark_collected", "_selected_action": ids})
+        paid_pickup.refresh_from_db()
+        self.assertEqual(paid_pickup.collected_at, first)  # a code cannot be used a second time
+
+    def test_staff_can_find_an_order_by_its_code_with_spaces_and_lowercase(self):
+        order = self.make("paid", "pickup")
+        typed = f"{order.code[:3]} {order.code[3:]}".lower()
+        response = self.client.get("/admin/orders/order/", {"q": typed})
+        self.assertContains(response, order.customer_name)

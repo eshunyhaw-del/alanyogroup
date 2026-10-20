@@ -27,6 +27,9 @@ def order_payload(order: Order) -> dict:
     return {
         "reference": order.reference,
         "status": order.status,
+        "code": order.code,
+        "fulfilment": order.fulfilment,
+        "pickup_showroom": order.pickup_showroom,
         "currency": order.currency,
         "total_pesewas": order.total_pesewas,
         "items": [
@@ -81,6 +84,8 @@ class CheckoutView(APIView):
                     city=data["city"],
                     region=data["region"],
                     notes=data["notes"],
+                    fulfilment=data["fulfilment"],
+                    pickup_showroom=data["pickup_showroom"],
                     currency=settings.PAYSTACK_CURRENCY,
                     subtotal_pesewas=subtotal,
                     total_pesewas=subtotal,

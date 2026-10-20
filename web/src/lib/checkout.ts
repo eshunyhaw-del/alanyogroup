@@ -22,7 +22,12 @@ export const GHANA_REGIONS = [
   "Ahafo",
 ];
 
+export type Fulfilment = "delivery" | "pickup";
+
 export type CheckoutFields = {
+  fulfilment: Fulfilment;
+  /** Slug of the showroom to collect from. Only used for pickup. */
+  pickup_showroom: string;
   name: string;
   email: string;
   phone: string;
@@ -57,9 +62,13 @@ export function validateFields(f: CheckoutFields): FieldErrors {
   if (f.name.trim().length < 2) errors.name = "Enter your full name.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) errors.email = "Enter a valid email address.";
   if (!/^(0\d{9}|233\d{9}|\+[1-9]\d{7,14})$/.test(phone)) errors.phone = "Enter a valid phone number, for example 053 197 8362.";
-  if (f.address.trim().length < 5) errors.address = "Enter your delivery address.";
-  if (f.city.trim().length < 2) errors.city = "Enter your town or city.";
-  if (!GHANA_REGIONS.includes(f.region)) errors.region = "Choose your region.";
+  if (f.fulfilment === "pickup") {
+    if (!f.pickup_showroom) errors.pickup_showroom = "Choose which showroom you will collect from.";
+  } else {
+    if (f.address.trim().length < 5) errors.address = "Enter your delivery address.";
+    if (f.city.trim().length < 2) errors.city = "Enter your town or city.";
+    if (!GHANA_REGIONS.includes(f.region)) errors.region = "Choose your region.";
+  }
   if (!f.consent) errors.consent = "Please accept the policies to continue.";
   return errors;
 }
@@ -112,6 +121,10 @@ export async function startCheckout(
 
 export type OrderStatus = {
   reference: string;
+  /** Short code the customer quotes: shown at a showroom for pickup, sent on WhatsApp for delivery. */
+  code: string;
+  fulfilment: Fulfilment;
+  pickup_showroom: string;
   status: "pending" | "paid" | "failed" | "review";
   currency: string;
   total_pesewas: number;

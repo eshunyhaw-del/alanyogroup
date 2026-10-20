@@ -7,6 +7,8 @@ import { ButtonLink } from "@/components/PageHeader";
 import { useCart } from "@/lib/cart";
 import { formatGHS } from "@/lib/catalog";
 import { ORDER_REFERENCE, type OrderStatus, verifyOrder } from "@/lib/checkout";
+import { PHONE, WHATSAPP_NUMBER_E164 } from "@/lib/contact";
+import { showroomHours, showrooms } from "@/lib/showrooms";
 
 type View = { kind: "checking" } | { kind: "order"; order: OrderStatus } | { kind: "unreachable" };
 
@@ -72,34 +74,7 @@ export function OrderConfirmation() {
 
   const { order } = view;
   if (order.status === "paid") {
-    return (
-      <div className="max-w-2xl">
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Order {order.reference}</p>
-        <h2 className="mt-4 text-2xl font-light tracking-tight">Thank you for your order.</h2>
-        <p className="mt-6 text-[15px] font-light leading-[1.8] text-ink/80">
-          Your payment has been received. A receipt has been sent to your email, and our customer support team will call
-          you to confirm your delivery address. When your order arrives, the driver will ask for your name and order
-          number.
-        </p>
-        <ul className="mt-8 divide-y divide-stone border-y border-stone text-[15px] font-light">
-          {order.items.map((i) => (
-            <li key={i.name} className="flex justify-between gap-6 py-3">
-              <span>
-                {i.name} × {i.quantity}
-              </span>
-              <span>{formatGHS(i.line_total_pesewas)}</span>
-            </li>
-          ))}
-          <li className="flex justify-between gap-6 py-3 text-ink">
-            <span>Total paid</span>
-            <span>{formatGHS(order.total_pesewas)}</span>
-          </li>
-        </ul>
-        <div className="mt-10">
-          <ButtonLink href="/collections">Continue browsing</ButtonLink>
-        </div>
-      </div>
-    );
+    return <PaidOrder order={order} />;
   }
   if (order.status === "failed") {
     return (
@@ -147,6 +122,111 @@ function Notice({
       <h2 className="text-2xl font-light tracking-tight">{title}</h2>
       <p className="mt-4 text-[15px] font-light leading-[1.8] text-ink/80">{body}</p>
       {action && <div className="mt-8">{action}</div>}
+    </div>
+  );
+}
+
+const spaced = (code: string) => `${code.slice(0, 3)} ${code.slice(3)}`;
+
+function PaidOrder({ order }: { order: OrderStatus }) {
+  const pickup = order.fulfilment === "pickup";
+  const room = showrooms.find((s) => s.slug === order.pickup_showroom);
+  const code = spaced(order.code);
+  const whatsapp = `https://wa.me/${WHATSAPP_NUMBER_E164}?text=${encodeURIComponent(
+    `Hello Alanyo Group, my order code is ${code}.`,
+  )}`;
+
+  return (
+    <div className="max-w-2xl">
+      <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Order {order.reference}</p>
+      <h2 className="mt-4 text-2xl font-light tracking-tight">Thank you for your order.</h2>
+      <p className="mt-4 text-[15px] font-light leading-[1.8] text-ink/80">
+        Your payment has been received, and a receipt has been sent to your email.
+      </p>
+
+      <div className="mt-8 border border-ink bg-white px-6 py-6">
+        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm">
+          {pickup ? "Your collection code" : "Your order code"}
+        </p>
+        <p className="mt-3 text-[clamp(2.25rem,6vw,3.5rem)] font-light tracking-[0.18em]" aria-label={`Code ${code.split("").join(" ")}`}>
+          {code}
+        </p>
+        <p className="mt-2 text-[12px] text-warm">Keep this code. It is also in your email. Take a screenshot if you like.</p>
+      </div>
+
+      {pickup && room ? (
+        <div className="mt-6 text-[15px] font-light leading-[1.8] text-ink/80">
+          <h3 className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm">Collect your order</h3>
+          <p className="mt-3">
+            <span className="text-ink">{room.name}</span>
+            <br />
+            {room.addressLine} · Plus code {room.plusCode}
+            <br />
+            {showroomHours[0].days}, {showroomHours[0].time}
+            {room.phone && (
+              <>
+                <br />
+                <a href={`tel:${room.phone.e164}`} className="border-b border-ink/40 hover:border-ink">
+                  {room.phone.display}
+                </a>
+              </>
+            )}
+          </p>
+          <p className="mt-3">
+            Your order is available now that your payment is confirmed, and pickup is free. Please bring this code and a
+            valid ID.
+          </p>
+          <p className="mt-4">
+            <a
+              href={room.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-b border-ink/50 pb-1 text-[11px] uppercase tracking-[0.2em] hover:border-ink"
+            >
+              Get directions
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+        </div>
+      ) : (
+        <div className="mt-6 text-[15px] font-light leading-[1.8] text-ink/80">
+          <h3 className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm">What happens next</h3>
+          <p className="mt-3">
+            Please send this code on WhatsApp to {PHONE.display} so we can match your order quickly. Our customer support
+            team will also call you to confirm your delivery address. When your order arrives, the driver will ask for
+            your name and order number.
+          </p>
+          <p className="mt-4">
+            <a
+              href={whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block border border-ink px-6 py-3 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-500 ease-quiet hover:bg-ink hover:text-porcelain"
+            >
+              Send my code on WhatsApp
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+        </div>
+      )}
+
+      <ul className="mt-8 divide-y divide-stone border-y border-stone text-[15px] font-light">
+        {order.items.map((i) => (
+          <li key={i.name} className="flex justify-between gap-6 py-3">
+            <span>
+              {i.name} × {i.quantity}
+            </span>
+            <span>{formatGHS(i.line_total_pesewas)}</span>
+          </li>
+        ))}
+        <li className="flex justify-between gap-6 py-3 text-ink">
+          <span>Total paid</span>
+          <span>{formatGHS(order.total_pesewas)}</span>
+        </li>
+      </ul>
+      <div className="mt-10">
+        <ButtonLink href="/collections">Continue browsing</ButtonLink>
+      </div>
     </div>
   );
 }

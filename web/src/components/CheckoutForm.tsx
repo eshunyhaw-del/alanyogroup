@@ -11,14 +11,18 @@ import {
   GHANA_REGIONS,
   type CheckoutFields,
   type FieldErrors,
+  type Fulfilment,
   startCheckout,
   validateFields,
 } from "@/lib/checkout";
+import { showroomHours, showrooms } from "@/lib/showrooms";
 
 // From the Shipping Policy: orders of GHS 16,000 or more qualify for free delivery within Greater Accra.
 const FREE_DELIVERY_PESEWAS = 16000 * 100;
 
 const EMPTY: CheckoutFields = {
+  fulfilment: "delivery",
+  pickup_showroom: "",
   name: "",
   email: "",
   phone: "",
@@ -30,7 +34,18 @@ const EMPTY: CheckoutFields = {
   website: "",
 };
 
-function deliveryNote(region: string, subtotal: number): { label: string; detail: string } {
+function deliveryNote(
+  fulfilment: Fulfilment,
+  region: string,
+  subtotal: number,
+): { label: string; detail: string } {
+  if (fulfilment === "pickup") {
+    return {
+      label: "Pickup · Free",
+      detail:
+        "Your order is available for collection once your payment is confirmed. Bring your collection code and a valid ID.",
+    };
+  }
   if (region === "Greater Accra" && subtotal >= FREE_DELIVERY_PESEWAS) {
     return { label: "Free", detail: "Free delivery within Greater Accra on orders of GHS 16,000 or more." };
   }
@@ -40,8 +55,18 @@ function deliveryNote(region: string, subtotal: number): { label: string; detail
   };
 }
 
-function OrderSummary({ lines, subtotal, region }: { lines: CartLine[]; subtotal: number; region: string }) {
-  const shipping = deliveryNote(region, subtotal);
+function OrderSummary({
+  lines,
+  subtotal,
+  fulfilment,
+  region,
+}: {
+  lines: CartLine[];
+  subtotal: number;
+  fulfilment: Fulfilment;
+  region: string;
+}) {
+  const shipping = deliveryNote(fulfilment, region, subtotal);
   return (
     <div>
       <ul className="space-y-5">
@@ -65,7 +90,7 @@ function OrderSummary({ lines, subtotal, region }: { lines: CartLine[]; subtotal
           <dd>{formatGHS(subtotal)}</dd>
         </div>
         <div className="flex justify-between gap-6">
-          <dt>Delivery</dt>
+          <dt>{fulfilment === "pickup" ? "Collection" : "Delivery"}</dt>
           <dd className="text-right text-warm">{shipping.label}</dd>
         </div>
         <div className="flex items-baseline justify-between border-t border-stone pt-4 text-[17px]">
@@ -123,6 +148,8 @@ export function CheckoutForm() {
     set("name", `${next.first} ${next.last}`.trim());
   };
 
+  const pickup = fields.fulfilment === "pickup";
+
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (busy) return;
@@ -136,7 +163,9 @@ export function CheckoutForm() {
       setErrors(found);
       setMessage("Please check the highlighted details.");
       const firstKey = Object.keys(found)[0];
-      document.getElementById(firstKey === "name" ? (names.first.trim() ? "last" : "first") : firstKey)?.focus();
+      const target =
+        firstKey === "name" ? (names.first.trim() ? "last" : "first") : firstKey === "pickup_showroom" ? "showroom-weija" : firstKey;
+      document.getElementById(target)?.focus();
       return;
     }
 
@@ -159,8 +188,13 @@ export function CheckoutForm() {
     setBusy(false);
   }
 
-  const shipping = deliveryNote(fields.region, subtotalPesewas);
+  const shipping = deliveryNote(fields.fulfilment, fields.region, subtotalPesewas);
   const sectionTitle = "text-[17px] font-normal tracking-tight";
+  const choose = (value: Fulfilment) => {
+    setFields((f) => ({ ...f, fulfilment: value }));
+    setErrors({});
+    setMessage(null);
+  };
 
   return (
     <form noValidate onSubmit={onSubmit} className="min-h-[calc(100svh-5rem)] md:grid md:grid-cols-2">
@@ -171,7 +205,7 @@ export function CheckoutForm() {
           <span>{formatGHS(subtotalPesewas)}</span>
         </summary>
         <div className="pt-6">
-          <OrderSummary lines={lines} subtotal={subtotalPesewas} region={fields.region} />
+          <OrderSummary lines={lines} subtotal={subtotalPesewas} fulfilment={fields.fulfilment} region={fields.region} />
         </div>
       </details>
 
@@ -195,7 +229,7 @@ export function CheckoutForm() {
               inputMode="email"
               required
               maxLength={254}
-              hint="Your receipt is sent here."
+              hint="Your receipt and collection or order code are sent here."
               value={fields.email}
               onChange={(e) => set("email", e.target.value)}
               error={errors.email}
@@ -208,21 +242,11 @@ export function CheckoutForm() {
               inputMode="tel"
               required
               maxLength={30}
-              hint="Our team calls to confirm your delivery."
+              hint={pickup ? "Our team may call you about your order." : "Our team calls to confirm your delivery."}
               value={fields.phone}
               onChange={(e) => set("phone", e.target.value)}
               error={errors.phone}
             />
-          </section>
-
-          <section className="mt-10 space-y-3" aria-labelledby="delivery-title">
-            <h2 id="delivery-title" className={sectionTitle}>
-              Delivery
-            </h2>
-            <div className={`border border-ink/25 bg-stone/40 px-3 pb-2 pt-2`}>
-              <span className="block text-[11px] text-warm">Country / region</span>
-              <span className="mt-0.5 block text-[15px] font-light">Ghana</span>
-            </div>
             <div className="grid grid-cols-2 gap-3">
               <BoxField
                 label="First name"
@@ -245,54 +269,136 @@ export function CheckoutForm() {
                 error={errors.name && names.first.trim() ? errors.name : undefined}
               />
             </div>
-            <BoxField
-              label="Address"
-              name="address"
-              autoComplete="street-address"
-              required
-              maxLength={300}
-              value={fields.address}
-              onChange={(e) => set("address", e.target.value)}
-              error={errors.address}
-            />
-            <div className="grid grid-cols-2 gap-3">
-              <BoxField
-                label="Town or city"
-                name="city"
-                autoComplete="address-level2"
-                required
-                maxLength={100}
-                value={fields.city}
-                onChange={(e) => set("city", e.target.value)}
-                error={errors.city}
-              />
-              <BoxSelect
-                label="Region"
-                name="region"
-                autoComplete="address-level1"
-                required
-                options={GHANA_REGIONS}
-                value={fields.region}
-                onChange={(e) => set("region", e.target.value)}
-                error={errors.region}
+            {pickup && (
+              <p className="text-[12px] text-warm">Please use your name exactly as it appears on your ID.</p>
+            )}
+          </section>
+
+          <section className="mt-10" aria-labelledby="delivery-title">
+            <h2 id="delivery-title" className={sectionTitle}>
+              Delivery
+            </h2>
+
+            <div role="radiogroup" aria-label="How would you like to receive your order?" className="mt-3 grid grid-cols-2 gap-1 bg-stone p-1">
+              {(
+                [
+                  ["delivery", "Delivery"],
+                  ["pickup", "Pickup"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={fields.fulfilment === value}
+                  onClick={() => choose(value)}
+                  className={`px-4 py-3 text-[14px] transition-colors ${
+                    fields.fulfilment === value ? "bg-white text-ink" : "text-ink/60 hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {pickup ? (
+              <fieldset className="mt-5">
+                <legend className="mb-3 text-[12px] text-warm">Collect from</legend>
+                <div className="space-y-2">
+                  {showrooms.map((s) => {
+                    const selected = fields.pickup_showroom === s.slug;
+                    return (
+                      <label
+                        key={s.slug}
+                        htmlFor={`showroom-${s.slug}`}
+                        className={`flex cursor-pointer items-start gap-3 border bg-white px-4 py-3 transition-colors ${
+                          selected ? "border-ink" : "border-ink/25 hover:border-ink/60"
+                        }`}
+                      >
+                        <input
+                          id={`showroom-${s.slug}`}
+                          type="radio"
+                          name="pickup_showroom"
+                          value={s.slug}
+                          checked={selected}
+                          onChange={() => set("pickup_showroom", s.slug)}
+                          className="mt-1 h-4 w-4 shrink-0 accent-ink"
+                        />
+                        <span className="text-[14px] leading-snug">
+                          <span className="block">{s.name}</span>
+                          <span className="mt-0.5 block text-[12px] font-light text-warm">
+                            {s.addressLine} · {showroomHours[0].days}, {showroomHours[0].time}
+                          </span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+                {errors.pickup_showroom && (
+                  <p role="alert" className="mt-2 text-[12px] text-ink">
+                    {errors.pickup_showroom}
+                  </p>
+                )}
+              </fieldset>
+            ) : (
+              <div className="mt-5 space-y-3">
+                <div className="border border-ink/25 bg-stone/40 px-3 pb-2 pt-2">
+                  <span className="block text-[11px] text-warm">Country / region</span>
+                  <span className="mt-0.5 block text-[15px] font-light">Ghana</span>
+                </div>
+                <BoxField
+                  label="Address"
+                  name="address"
+                  autoComplete="street-address"
+                  required
+                  maxLength={300}
+                  value={fields.address}
+                  onChange={(e) => set("address", e.target.value)}
+                  error={errors.address}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <BoxField
+                    label="Town or city"
+                    name="city"
+                    autoComplete="address-level2"
+                    required
+                    maxLength={100}
+                    value={fields.city}
+                    onChange={(e) => set("city", e.target.value)}
+                    error={errors.city}
+                  />
+                  <BoxSelect
+                    label="Region"
+                    name="region"
+                    autoComplete="address-level1"
+                    required
+                    options={GHANA_REGIONS}
+                    value={fields.region}
+                    onChange={(e) => set("region", e.target.value)}
+                    error={errors.region}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="mt-3">
+              <BoxTextArea
+                label={pickup ? "Order notes" : "Delivery notes"}
+                name="notes"
+                maxLength={500}
+                value={fields.notes}
+                onChange={(e) => set("notes", e.target.value)}
               />
             </div>
-            <BoxTextArea
-              label="Delivery notes"
-              name="notes"
-              maxLength={500}
-              value={fields.notes}
-              onChange={(e) => set("notes", e.target.value)}
-            />
           </section>
 
           <section className="mt-10" aria-labelledby="shipping-title">
             <h2 id="shipping-title" className={sectionTitle}>
-              Delivery method
+              {pickup ? "Collection method" : "Delivery method"}
             </h2>
             <div className="mt-3 border border-ink bg-white px-4 py-3">
               <div className="flex items-baseline justify-between gap-4 text-[14px]">
-                <span>Standard delivery</span>
+                <span>{pickup ? "Showroom pickup" : "Standard delivery"}</span>
                 <span className="text-right">{shipping.label}</span>
               </div>
               <p className="mt-1 text-[12px] leading-[1.6] text-warm">{shipping.detail}</p>
@@ -411,7 +517,7 @@ export function CheckoutForm() {
       {/* Summary */}
       <aside className="hidden border-l border-stone bg-white md:block" aria-label="Order summary">
         <div className="sticky top-20 max-w-[28rem] px-10 py-14 lg:ml-6">
-          <OrderSummary lines={lines} subtotal={subtotalPesewas} region={fields.region} />
+          <OrderSummary lines={lines} subtotal={subtotalPesewas} fulfilment={fields.fulfilment} region={fields.region} />
         </div>
       </aside>
     </form>

@@ -15,6 +15,20 @@ How checkout works, what is protected, and the steps to switch it on.
    reference, amount and currency all match the order. The redirect and the browser are never trusted.
 6. A receipt goes to the customer and an alert to staff, once.
 
+## Delivery and showroom pickup
+
+* At checkout the customer chooses **Delivery** or **Pickup**. For pickup they choose the **Weija** or **East Legon**
+  showroom and give no address. Pickup is free and the order is available once payment is confirmed.
+* Every order gets a short **code** (for example `K7M 2QX`; no 0, O, 1 or I). It is shown on the confirmation page and
+  in the receipt email.
+  * Pickup: the customer shows the code and a valid ID at the showroom.
+  * Delivery: the customer sends the code to the company WhatsApp number (053 197 8362).
+* Staff alert emails are tagged `[PICKUP]` or `[DELIVERY]` and name the showroom. Set `ORDER_NOTIFY_EMAILS`.
+* In the admin (`/admin/` > Orders): search by code (spaces and capitals do not matter), filter by fulfilment and
+  showroom, and use the action **Mark selected paid pickup orders as collected**. A code can only be collected once.
+* SMS is not built yet. When the owner agrees to register the sender ID "Alanyo Group", the code and order details can be
+  texted to the customer and to the chosen showroom from the same place the emails are sent.
+
 ## What is protected
 
 | Risk | Defence |
