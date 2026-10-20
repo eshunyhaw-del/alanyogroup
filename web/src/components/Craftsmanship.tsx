@@ -59,12 +59,6 @@ export function Craftsmanship() {
     <section ref={root} className="bg-porcelain text-ink">
       <div className="mx-auto max-w-[1800px] px-5 pb-12 pt-24 sm:px-8 lg:px-14 lg:pb-20 lg:pt-40">
         <div data-rise-group className="grid gap-8 md:grid-cols-12">
-          <p
-            data-rise
-            className="text-[11px] font-medium uppercase tracking-[0.22em] text-warm md:col-span-3"
-          >
-            The Craftsmanship
-          </p>
           <h2
             data-rise
             className="text-[clamp(2.25rem,4.6vw,4.75rem)] font-light leading-[1.05] tracking-[-0.02em] md:col-span-8 md:col-start-4"
@@ -98,7 +92,6 @@ export function Craftsmanship() {
                 className="object-cover"
               />
             </div>
-            <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-warm">Timber meets stone</p>
           </div>
 
           <div data-rise-group className="md:col-span-3 md:col-start-6 md:self-center">
