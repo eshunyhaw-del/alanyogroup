@@ -6,14 +6,17 @@ const isDev = process.env.NODE_ENV === "development";
 // 'unsafe-inline' (nonces would make every page dynamic). Everything else is locked down: no framing,
 // no third-party scripts or frames, forms and connections only to this site, and no plugins.
 // Customers are sent to Paystack by a navigation, which these rules allow; Paystack never loads inside our pages.
+// Cloudflare Turnstile (optional human check on the contact form) is allowed only when it is configured.
+const turnstile = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? " https://challenges.cloudflare.com" : "";
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${turnstile}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self'",
-  "frame-src 'none'",
+  `connect-src 'self'${turnstile}`,
+  turnstile ? `frame-src${turnstile}` : "frame-src 'none'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

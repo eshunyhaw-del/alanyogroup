@@ -9,6 +9,7 @@ import { formatGHS } from "@/lib/catalog";
 import { ORDER_REFERENCE, type OrderStatus, verifyOrder } from "@/lib/checkout";
 import { PHONE, WHATSAPP_NUMBER_E164 } from "@/lib/contact";
 import { showroomHours, showrooms } from "@/lib/showrooms";
+import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 type View = { kind: "checking" } | { kind: "order"; order: OrderStatus } | { kind: "unreachable" };
 
@@ -172,9 +173,7 @@ function PaidOrder({ order }: { order: OrderStatus }) {
               </>
             )}
             <br />
-            <a href={`mailto:${room.email}`} className="border-b border-ink/40 hover:border-ink">
-              {room.email}
-            </a>
+            <ProtectedEmail address={room.email} className="border-b border-ink/40 hover:border-ink" />
           </p>
           <p className="mt-3">
             Your order is available now that your payment is confirmed, and pickup is free. Please bring this code and a

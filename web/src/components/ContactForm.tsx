@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Field, TextArea } from "@/components/Field";
-import { SALES_EMAIL, WHATSAPP_NUMBER_E164 } from "@/lib/contact";
+import { SALES, WHATSAPP_NUMBER_E164 } from "@/lib/contact";
+import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 type Topic = "general" | "abroad" | "projects" | "product";
 
@@ -16,6 +17,27 @@ const OPENERS: Record<Topic, string> = {
 };
 
 type Status = "idle" | "sending" | "sent" | "error";
+
+// Optional human check (Cloudflare Turnstile). It appears only when a site key is configured at build time.
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        el: HTMLElement,
+        options: {
+          sitekey: string;
+          callback: (token: string) => void;
+          "expired-callback": () => void;
+          "error-callback": () => void;
+        },
+      ) => string;
+      reset: (widgetId?: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
 
 export function ContactForm() {
   const params = useSearchParams();
@@ -29,6 +51,39 @@ export function ContactForm() {
   );
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState("");
+  const widgetEl = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY) return;
+    const scriptId = "cf-turnstile-script";
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      document.head.appendChild(script);
+    }
+    const mount = () => {
+      if (window.turnstile && widgetEl.current && !widgetId.current) {
+        widgetId.current = window.turnstile.render(widgetEl.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: (t) => setToken(t),
+          "expired-callback": () => setToken(""),
+          "error-callback": () => setToken(""),
+        });
+      }
+    };
+    if (window.turnstile) mount();
+    else script.addEventListener("load", mount);
+    return () => {
+      script.removeEventListener("load", mount);
+      if (widgetId.current) window.turnstile?.remove(widgetId.current);
+      widgetId.current = null;
+    };
+  }, []);
 
   // WhatsApp is the main way to reach us: it opens the chat with the details already typed in.
   function sendOnWhatsApp(form: HTMLFormElement) {
@@ -55,6 +110,10 @@ export function ContactForm() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (status === "sending") return;
+    if (TURNSTILE_SITE_KEY && !token) {
+      setError("Please complete the security check below, or use WhatsApp.");
+      return;
+    }
     const form = new FormData(event.currentTarget);
     setStatus("sending");
     setError(null);
@@ -70,6 +129,7 @@ export function ContactForm() {
           topic,
           message,
           website: form.get("website") ?? "",
+          turnstile_token: token,
         }),
       });
       if (response.ok) {
@@ -85,6 +145,11 @@ export function ContactForm() {
       );
     } catch {
       setError("We could not reach the server. Please try WhatsApp, or email us directly.");
+    }
+    // A token is single-use: get a fresh one for the next attempt.
+    if (TURNSTILE_SITE_KEY) {
+      setToken("");
+      if (widgetId.current) window.turnstile?.reset(widgetId.current);
     }
     setStatus("error");
   }
@@ -139,6 +204,8 @@ export function ContactForm() {
         </label>
       </div>
 
+      {TURNSTILE_SITE_KEY && <div ref={widgetEl} aria-label="Security check" />}
+
       {error && (
         <p role="alert" className="border border-ink/40 p-4 text-[13px] leading-[1.6]">
           {error}
@@ -169,9 +236,7 @@ export function ContactForm() {
             Privacy Policy
           </Link>
           . You can also write to{" "}
-          <a href={`mailto:${SALES_EMAIL}`} className="border-b border-ink/30 hover:border-ink">
-            {SALES_EMAIL}
-          </a>
+          <ProtectedEmail address={SALES} className="border-b border-ink/30 hover:border-ink" />
           .
         </p>
       </div>

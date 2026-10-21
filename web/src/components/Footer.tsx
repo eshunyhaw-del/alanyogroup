@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/catalog";
-import { PHONE, SALES_EMAIL } from "@/lib/contact";
+import { PHONE, SALES } from "@/lib/contact";
 import { SOCIAL } from "@/lib/social";
+import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 const columns = [
   { title: "Collections", links: categories.map((c) => ({ label: c.name, href: `/collections/${c.slug}` })) },
@@ -38,9 +39,7 @@ export function Footer() {
               The Art of Refined Living. Luxury sanitaryware and fixtures for the bathroom and kitchen.
             </p>
             <div className="mt-6 text-[14px] font-light leading-[1.8]">
-              <a href={`mailto:${SALES_EMAIL}`} className="block border-b border-transparent hover:border-ink w-fit">
-                {SALES_EMAIL}
-              </a>
+              <ProtectedEmail address={SALES} className="block border-b border-transparent hover:border-ink w-fit" />
               <a href={`tel:${PHONE.e164}`} className="block border-b border-transparent hover:border-ink w-fit">
                 {PHONE.display}
               </a>

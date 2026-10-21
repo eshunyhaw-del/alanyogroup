@@ -3,17 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { SearchPanel } from "@/components/SearchPanel";
 import { categories } from "@/lib/categories";
+import { useHydrated } from "@/lib/useHydrated";
 import { type Tone, toneAt } from "@/lib/tone";
-
-const noopSubscribe = () => () => {};
-// False during server render and hydration, true afterwards, so client-only values never mismatch.
-function useHydrated() {
-  return useSyncExternalStore(noopSubscribe, () => true, () => false);
-}
 
 const links = [
   { label: "Showrooms", href: "/showroom" },

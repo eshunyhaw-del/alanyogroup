@@ -1,5 +1,6 @@
 import { ButtonLink, PageHeader } from "@/components/PageHeader";
-import { PHONE, SALES_EMAIL, WHATSAPP_URL } from "@/lib/contact";
+import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
+import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 type Block = { title: string; items: string[]; numbered?: boolean };
 
@@ -69,9 +70,7 @@ export function EnquiryPage({
               <div className="flex gap-4">
                 <dt className="w-16 text-warm">Email</dt>
                 <dd>
-                  <a href={`mailto:${SALES_EMAIL}`} className="border-b border-ink/40 hover:border-ink">
-                    {SALES_EMAIL}
-                  </a>
+                  <ProtectedEmail address={SALES} className="border-b border-ink/40 hover:border-ink" />
                 </dd>
               </div>
               <div className="flex gap-4">

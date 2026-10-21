@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { PolicySection as Section } from "@/components/PolicySection";
-import { PHONE, SALES_EMAIL, WHATSAPP_URL } from "@/lib/contact";
+import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
+import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 export const metadata: Metadata = {
   title: "5-Year Warranty — Alanyo Group",
@@ -44,9 +45,7 @@ export default function WarrantyPage() {
           <ul>
             <li>
               Contact us by phone or WhatsApp on {PHONE.display}, or by email at{" "}
-              <a href={`mailto:${SALES_EMAIL}`} className="border-b border-ink/40 hover:border-ink">
-                {SALES_EMAIL}
-              </a>
+              <ProtectedEmail address={SALES} className="border-b border-ink/40 hover:border-ink" />
               .
             </li>
             <li>Give us your order number or collection code, and describe the problem.</li>
@@ -95,9 +94,7 @@ export default function WarrantyPage() {
             </a>
             <br />
             Email:{" "}
-            <a href={`mailto:${SALES_EMAIL}`} className="border-b border-ink/40 hover:border-ink">
-              {SALES_EMAIL}
-            </a>
+            <ProtectedEmail address={SALES} className="border-b border-ink/40 hover:border-ink" />
             <br />
             Business hours: 8:00 AM to 5:00 PM
           </p>

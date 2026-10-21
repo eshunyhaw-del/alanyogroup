@@ -39,6 +39,8 @@ SHOWROOM_EMAILS = {
     "weija": env("SHOWROOM_EMAIL_WEIJA", default="weija@alanyogroup.com"),
     "east-legon": env("SHOWROOM_EMAIL_EAST_LEGON", default="eastlegon@alanyogroup.com"),
 }
+# Optional human check on the contact form (Cloudflare Turnstile). Off until the secret key is set.
+TURNSTILE_SECRET_KEY = env("TURNSTILE_SECRET_KEY", default="")
 # Where website enquiries are sent.
 ENQUIRY_EMAILS = [e.strip() for e in env.list("ENQUIRY_EMAILS", default=["sales@alanyogroup.com"]) if e.strip()]
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Alanyo Group <sales@alanyogroup.com>")

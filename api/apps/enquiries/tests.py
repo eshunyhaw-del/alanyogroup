@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.core import mail
 from django.core.cache import cache
 from django.test import TestCase, override_settings
@@ -68,3 +70,58 @@ class EnquiryTests(TestCase):
     def test_rate_limited(self):
         codes = [self.post().status_code for _ in range(8)]
         self.assertIn(429, codes)
+
+
+@override_settings(ENQUIRY_EMAILS=["sales@alanyogroup.com"], TURNSTILE_SECRET_KEY="turnstile-test-secret")
+class TurnstileTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.api = APIClient()
+
+    def post(self, **extra):
+        data = {
+            "name": "Kofi Boateng", "email": "kofi@example.com", "topic": "general",
+            "message": "I would like to ask about bathroom fixtures for my house.",
+        }
+        data.update(extra)
+        return self.api.post("/api/v1/enquiries", data, format="json")
+
+    def cloudflare(self, success=True):
+        response = mock.Mock()
+        response.json.return_value = {"success": success}
+        return mock.patch("apps.enquiries.turnstile.requests.post", return_value=response)
+
+    def test_a_missing_token_is_refused_without_calling_cloudflare(self):
+        with self.cloudflare() as call:
+            response = self.post()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("turnstile", response.data)
+        call.assert_not_called()
+        self.assertEqual(Enquiry.objects.count(), 0)
+
+    def test_a_failed_check_is_refused(self):
+        with self.cloudflare(success=False):
+            response = self.post(turnstile_token="bad-token")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Enquiry.objects.count(), 0)
+
+    def test_a_passed_check_saves_the_enquiry_and_sends_the_secret_only_to_cloudflare(self):
+        with self.cloudflare(success=True) as call:
+            response = self.post(turnstile_token="good-token")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Enquiry.objects.count(), 1)
+        sent = call.call_args.kwargs["data"]
+        self.assertEqual((sent["secret"], sent["response"]), ("turnstile-test-secret", "good-token"))
+
+    def test_cloudflare_being_down_fails_safely(self):
+        import requests
+
+        with mock.patch("apps.enquiries.turnstile.requests.post", side_effect=requests.ConnectionError("down")):
+            response = self.post(turnstile_token="any")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(Enquiry.objects.count(), 0)
+        self.assertNotIn("down", str(response.data))
+
+    @override_settings(TURNSTILE_SECRET_KEY="")
+    def test_when_not_configured_the_form_works_exactly_as_before(self):
+        self.assertEqual(self.post().status_code, 201)
