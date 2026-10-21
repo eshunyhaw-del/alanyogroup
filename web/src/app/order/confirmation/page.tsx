@@ -4,7 +4,7 @@ import { OrderConfirmation } from "@/components/OrderConfirmation";
 import { PageHeader } from "@/components/PageHeader";
 
 export const metadata: Metadata = {
-  title: "Order confirmation — Alanyo Group",
+  title: "Order confirmation | Alanyo Group",
   robots: { index: false, follow: false },
 };
 

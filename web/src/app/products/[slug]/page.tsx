@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/products/[slug]">
   const { slug } = await params;
   const product = getProduct(slug);
   return {
-    title: product ? `${product.name} — Alanyo Group` : "Product — Alanyo Group",
+    title: product ? `${product.name} | Alanyo Group` : "Product | Alanyo Group",
     description: product?.summary || undefined,
   };
 }

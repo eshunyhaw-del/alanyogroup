@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CartView } from "@/components/CartView";
 import { PageHeader } from "@/components/PageHeader";
 
-export const metadata: Metadata = { title: "Cart — Alanyo Group" };
+export const metadata: Metadata = { title: "Cart | Alanyo Group" };
 
 export default function CartPage() {
   return (

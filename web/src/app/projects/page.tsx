@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EnquiryPage } from "@/components/EnquiryPage";
 
 export const metadata: Metadata = {
-  title: "Major Projects — Alanyo Group",
+  title: "Major Projects | Alanyo Group",
   description:
     "Bathroom and kitchen fixtures for homes, developments, hotels and offices. Talk to Alanyo Group early in your project.",
 };

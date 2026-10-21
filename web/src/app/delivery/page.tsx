@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { PolicySection as Section } from "@/components/PolicySection";
 
 export const metadata: Metadata = {
-  title: "Shipping Policy — Alanyo Group",
+  title: "Shipping Policy | Alanyo Group",
   description: "How Alanyo Group delivers: free delivery eligibility, shipping methods, timings and locations.",
 };
 

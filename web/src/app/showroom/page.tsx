@@ -4,7 +4,7 @@ import { ButtonLink, PageHeader } from "@/components/PageHeader";
 import { showroomHours, showrooms } from "@/lib/showrooms";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
 
-export const metadata: Metadata = { title: "Showrooms — Alanyo Group" };
+export const metadata: Metadata = { title: "Showrooms | Alanyo Group" };
 
 export default function ShowroomPage() {
   return (

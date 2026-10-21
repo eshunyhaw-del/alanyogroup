@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { categories, productsIn } from "@/lib/catalog";
 
-export const metadata: Metadata = { title: "Collections — Alanyo Group" };
+export const metadata: Metadata = { title: "Collections | Alanyo Group" };
 
 export default function CollectionsPage() {
   return (

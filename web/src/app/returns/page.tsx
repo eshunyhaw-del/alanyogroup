@@ -6,7 +6,7 @@ import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 export const metadata: Metadata = {
-  title: "Returns Policy — Alanyo Group",
+  title: "Returns Policy | Alanyo Group",
   description: "Returns are accepted within 7 days when an item is broken. How to report a problem and what happens next.",
 };
 

@@ -6,7 +6,7 @@ import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
 
 export const metadata: Metadata = {
-  title: "5-Year Warranty — Alanyo Group",
+  title: "5-Year Warranty | Alanyo Group",
   description: "Every Alanyo Group purchase is covered by a 5-year warranty. What it covers and how to make a claim.",
 };
 

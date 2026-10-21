@@ -14,7 +14,7 @@ const manrope = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Alanyo Group — The Art of Refined Living",
+  title: "Alanyo Group | The Art of Refined Living",
   description:
     "Luxury sanitaryware and bathroom and kitchen fixtures, composed like architecture.",
 };

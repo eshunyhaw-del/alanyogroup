@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
 
-export const metadata: Metadata = { title: "Contact — Alanyo Group" };
+export const metadata: Metadata = { title: "Contact | Alanyo Group" };
 
 export default function ContactPage() {
   return (

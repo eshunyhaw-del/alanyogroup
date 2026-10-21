@@ -11,7 +11,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/collections/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const category = getCategory(slug);
-  return { title: category ? `${category.name} — Alanyo Group` : "Collections — Alanyo Group" };
+  return { title: category ? `${category.name} | Alanyo Group` : "Collections | Alanyo Group" };
 }
 
 export default async function CategoryPage({ params }: PageProps<"/collections/[slug]">) {

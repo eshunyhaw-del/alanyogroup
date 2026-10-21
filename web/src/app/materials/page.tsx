@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ButtonLink, PageHeader } from "@/components/PageHeader";
 
-export const metadata: Metadata = { title: "Materials — Alanyo Group" };
+export const metadata: Metadata = { title: "Materials | Alanyo Group" };
 
 export default function Page() {
   return (

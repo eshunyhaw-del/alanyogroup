@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { PolicySection as Section } from "@/components/PolicySection";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Alanyo Group",
+  title: "Privacy Policy | Alanyo Group",
   description: "How Alanyo Group collects, uses, stores and protects your personal information.",
 };
 

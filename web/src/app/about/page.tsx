@@ -6,7 +6,7 @@ import { RiseIn } from "@/components/RiseIn";
 import { categories, productsIn } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "About Us — Alanyo Group",
+  title: "About Us | Alanyo Group",
   description:
     "The story of Alanyo Group: quality craftsmanship and accessible luxury for homeowners, architects and designers.",
 };
