@@ -46,6 +46,11 @@ export default function ShowroomPage() {
                 ) : (
                   <span className="text-warm">to be confirmed</span>
                 )}
+                <br />
+                <span className="text-warm">Email </span>
+                <a href={`mailto:${s.email}`} className="border-b border-ink/40 hover:border-ink">
+                  {s.email}
+                </a>
               </p>
               <dl className="mt-6 max-w-xs divide-y divide-stone text-[14px] font-light">
                 {showroomHours.map((h) => (

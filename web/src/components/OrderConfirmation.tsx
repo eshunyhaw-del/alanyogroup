@@ -171,6 +171,10 @@ function PaidOrder({ order }: { order: OrderStatus }) {
                 </a>
               </>
             )}
+            <br />
+            <a href={`mailto:${room.email}`} className="border-b border-ink/40 hover:border-ink">
+              {room.email}
+            </a>
           </p>
           <p className="mt-3">
             Your order is available now that your payment is confirmed, and pickup is free. Please bring this code and a

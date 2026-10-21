@@ -8,6 +8,8 @@ export type Showroom = {
   mapsUrl: string;
   /** Local display format and the international form used for tel: links. */
   phone?: { display: string; e164: string };
+  /** The showroom's own inbox. */
+  email: string;
 };
 
 /** Supplied from the Weija listing and applied to both showrooms at the owner's instruction. */
@@ -26,6 +28,7 @@ export const showrooms: Showroom[] = [
     addressLine: "Gbawe, Weija",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=5.552011%2C-0.3264081",
     phone: sharedPhone, // one number serves both showrooms, at the owner's instruction
+    email: "weija@alanyogroup.com",
   },
   {
     slug: "east-legon",
@@ -34,6 +37,7 @@ export const showrooms: Showroom[] = [
     plusCode: "MVMM+X46",
     addressLine: "East Legon, Accra",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=MVMM%2BX46%2C%20Accra",
+    email: "eastlegon@alanyogroup.com",
     phone: sharedPhone,
   },
 ];
