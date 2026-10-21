@@ -1,6 +1,8 @@
 import { ButtonLink, PageHeader } from "@/components/PageHeader";
 import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
+import { FaqList } from "@/components/Faq";
+import type { Faq } from "@/lib/faqs";
 
 type Block = { title: string; items: string[]; numbered?: boolean };
 
@@ -14,6 +16,7 @@ export function EnquiryPage({
   topic,
   cta,
   note,
+  faqs,
 }: {
   kicker: string;
   title: string;
@@ -22,6 +25,7 @@ export function EnquiryPage({
   topic: string;
   cta: string;
   note?: string;
+  faqs?: Faq[];
 }) {
   return (
     <main>
@@ -84,6 +88,8 @@ export function EnquiryPage({
             </dl>
           </div>
         </section>
+
+        {faqs && <FaqList faqs={faqs} />}
       </div>
     </main>
   );

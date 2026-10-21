@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { PolicySection as Section } from "@/components/PolicySection";
 import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
+import { FaqList } from "@/components/Faq";
+import { returnsFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = {
   title: "Returns Policy | Alanyo Group",
@@ -118,6 +120,8 @@ export default function ReturnsPage() {
             email.
           </p>
         </Section>
+
+        <FaqList faqs={returnsFaqs} />
       </div>
     </main>
   );

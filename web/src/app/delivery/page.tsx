@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { PolicySection as Section } from "@/components/PolicySection";
+import { FaqList } from "@/components/Faq";
+import { deliveryFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = {
   title: "Shipping Policy | Alanyo Group",
@@ -122,6 +124,8 @@ export default function ShippingPolicyPage() {
             through our website or by email.
           </p>
         </Section>
+
+        <FaqList faqs={deliveryFaqs} />
 
         <div className="border-t border-stone pt-10 md:grid md:grid-cols-12 md:gap-8">
           <p className="text-[15px] font-light leading-[1.8] text-ink/80 md:col-span-8 md:col-start-4">

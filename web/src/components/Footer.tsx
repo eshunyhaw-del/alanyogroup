@@ -12,7 +12,6 @@ const columns = [
     links: [
       { label: "About", href: "/about" },
       { label: "Showrooms", href: "/showroom" },
-      { label: "Materials", href: "/materials" },
       { label: "Customers Abroad", href: "/abroad" },
       { label: "Major Projects", href: "/projects" },
     ],
@@ -21,6 +20,7 @@ const columns = [
     title: "Support",
     links: [
       { label: "Contact", href: "/contact" },
+      { label: "FAQs", href: "/faqs" },
       { label: "Delivery", href: "/delivery" },
       { label: "Returns", href: "/returns" },
       { label: "5-Year Warranty", href: "/warranty" },

@@ -4,6 +4,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { PolicySection as Section } from "@/components/PolicySection";
 import { PHONE, SALES, WHATSAPP_URL } from "@/lib/contact";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
+import { FaqList } from "@/components/Faq";
+import { warrantyFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = {
   title: "5-Year Warranty | Alanyo Group",
@@ -106,6 +108,8 @@ export default function WarrantyPage() {
             email.
           </p>
         </Section>
+
+        <FaqList faqs={warrantyFaqs} />
       </div>
     </main>
   );

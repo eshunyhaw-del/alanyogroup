@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EnquiryPage } from "@/components/EnquiryPage";
+import { projectFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = {
   title: "Major Projects | Alanyo Group",
@@ -16,6 +17,7 @@ export default function ProjectsPage() {
       topic="projects"
       cta="Discuss your project"
       note="Send us a few details about your project and the quantities you have in mind. Our team will review them and come back to you with pricing and availability."
+      faqs={projectFaqs}
       blocks={[
         {
           title: "Who we work with",

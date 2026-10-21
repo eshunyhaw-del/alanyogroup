@@ -12,7 +12,6 @@ import { type Tone, toneAt } from "@/lib/tone";
 
 const links = [
   { label: "Showrooms", href: "/showroom" },
-  { label: "Materials", href: "/materials" },
   { label: "About", href: "/about" },
 ];
 

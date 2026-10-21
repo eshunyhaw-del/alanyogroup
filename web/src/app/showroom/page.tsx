@@ -3,6 +3,8 @@ import Image from "next/image";
 import { ButtonLink, PageHeader } from "@/components/PageHeader";
 import { showroomHours, showrooms } from "@/lib/showrooms";
 import { ProtectedEmail } from "@/components/ProtectedEmail";
+import { FaqList } from "@/components/Faq";
+import { showroomFaqs } from "@/lib/faqs";
 
 export const metadata: Metadata = { title: "Showrooms | Alanyo Group" };
 
@@ -83,6 +85,10 @@ export default function ShowroomPage() {
               Make an enquiry
             </ButtonLink>
           </div>
+        </div>
+
+        <div className="mt-20">
+          <FaqList faqs={showroomFaqs} />
         </div>
       </div>
     </main>
